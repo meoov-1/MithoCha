@@ -19,7 +19,7 @@
                 <p class="eyebrow">Admin Dashboard</p>
                 <h1 class="dashboard-title">MithoCha Control Room</h1>
                 <p class="dashboard-copy">
-                    Welcome, <strong>admin@mithocha.com</strong>. This admin area is reserved for operational control, inventory oversight, order flow, and customer performance monitoring.
+                    Welcome, <strong data-field="adminEmail">--</strong>. This admin area is ready for operational, inventory, order, and customer data from the backend.
                 </p>
             </div>
             <div class="topbar-actions">
@@ -33,23 +33,23 @@
         <div class="metric-grid">
             <article class="metric-card">
                 <p class="metric-label">Daily Orders</p>
-                <h2 class="metric-value">284</h2>
-                <p class="metric-note">+18% from yesterday</p>
+                <h2 class="metric-value" data-field="dailyOrders">--</h2>
+                <p class="metric-note" data-field="dailyOrdersTrend">Pending database value</p>
             </article>
             <article class="metric-card">
                 <p class="metric-label">Revenue</p>
-                <h2 class="metric-value">$4,820</h2>
-                <p class="metric-note">Premium drinks driving margin growth</p>
+                <h2 class="metric-value" data-field="revenue">--</h2>
+                <p class="metric-note" data-field="revenueNote">Pending database value</p>
             </article>
             <article class="metric-card">
                 <p class="metric-label">Inventory Alerts</p>
-                <h2 class="metric-value">06</h2>
-                <p class="metric-note">Brown sugar pearls need restock today</p>
+                <h2 class="metric-value" data-field="inventoryAlerts">--</h2>
+                <p class="metric-note" data-field="inventoryNote">Pending database value</p>
             </article>
             <article class="metric-card">
                 <p class="metric-label">Customer Satisfaction</p>
-                <h2 class="metric-value">4.9/5</h2>
-                <p class="metric-note">Based on recent in-app ratings</p>
+                <h2 class="metric-value" data-field="customerSatisfaction">--</h2>
+                <p class="metric-note" data-field="customerSatisfactionNote">Pending database value</p>
             </article>
         </div>
     </section>
@@ -57,27 +57,27 @@
     <section class="card-grid two-col">
         <article class="dashboard-card">
             <h2 class="card-title">Admin Controls</h2>
-            <p class="card-copy">Everything needed for the management team is grouped here for fast daily operations.</p>
+            <p class="card-copy">These sections are placeholders for admin functions that will be populated from backend modules.</p>
             <ul class="feature-list">
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">inventory_2</span>
                     <div class="feature-text">
                         <strong>Inventory Monitoring</strong>
-                        <span>Track pearls, syrups, tea leaves, cream toppings, and packaging supplies.</span>
+                        <span data-field="inventoryMonitoringDescription">Inventory data placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">receipt_long</span>
                     <div class="feature-text">
                         <strong>Order Supervision</strong>
-                        <span>Review incoming orders, preparation status, and outlet-level fulfillment speed.</span>
+                        <span data-field="orderSupervisionDescription">Order data placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">group</span>
                     <div class="feature-text">
                         <strong>Customer Insights</strong>
-                        <span>See customer trends, repeat purchases, and high-value loyalty members.</span>
+                        <span data-field="customerInsightsDescription">Customer data placeholder</span>
                     </div>
                 </li>
             </ul>
@@ -85,27 +85,27 @@
 
         <article class="dashboard-card">
             <h2 class="card-title">Recent Admin Activity</h2>
-            <p class="card-copy">A quick view of the latest system events across stores and operations.</p>
+            <p class="card-copy">Recent activity cards are ready for records loaded from the database.</p>
             <ul class="activity-list">
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">shopping_bag</span>
                     <div class="activity-text">
-                        <strong>47 new orders in the last hour</strong>
-                        <span>Most demand is concentrated on brown sugar milk tea and taro cream specials.</span>
+                        <strong data-field="activityTitle1">Activity title</strong>
+                        <span data-field="activityDescription1">Activity description placeholder</span>
                     </div>
                 </li>
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">warning</span>
                     <div class="activity-text">
-                        <strong>Low stock warning issued</strong>
-                        <span>Tapioca pearls at the central branch fell below the configured safety threshold.</span>
+                        <strong data-field="activityTitle2">Activity title</strong>
+                        <span data-field="activityDescription2">Activity description placeholder</span>
                     </div>
                 </li>
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">monitoring</span>
                     <div class="activity-text">
-                        <strong>Sales trend updated</strong>
-                        <span>Weekend tea bundles are outperforming the prior weekly campaign by 24%.</span>
+                        <strong data-field="activityTitle3">Activity title</strong>
+                        <span data-field="activityDescription3">Activity description placeholder</span>
                     </div>
                 </li>
             </ul>
@@ -114,26 +114,26 @@
         <article class="dashboard-card">
             <div class="info-banner">
                 <span class="material-symbols-outlined">shield_lock</span>
-                <p>This page presents the MithoCha admin UI for operations, inventory, and business monitoring.</p>
+                <p data-field="adminBannerMessage">Admin banner message placeholder</p>
             </div>
         </article>
 
         <article class="dashboard-card">
             <h2 class="card-title">Recommended Actions</h2>
-            <p class="card-copy">Operational suggestions based on current load and stock movement.</p>
+            <p class="card-copy">Action recommendations can be rendered here after database integration.</p>
             <ul class="feature-list">
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">local_shipping</span>
                     <div class="feature-text">
-                        <strong>Place supplier request</strong>
-                        <span>Restock pearls, Assam black tea, and signature brown sugar syrup before evening rush.</span>
+                        <strong data-field="recommendationTitle1">Recommendation title</strong>
+                        <span data-field="recommendationDescription1">Recommendation description placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">sell</span>
                     <div class="feature-text">
-                        <strong>Push premium combo offer</strong>
-                        <span>Bundle best-selling drinks with mochi toppings to lift average order value.</span>
+                        <strong data-field="recommendationTitle2">Recommendation title</strong>
+                        <span data-field="recommendationDescription2">Recommendation description placeholder</span>
                     </div>
                 </li>
             </ul>

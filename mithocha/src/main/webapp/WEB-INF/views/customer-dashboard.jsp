@@ -19,7 +19,7 @@
                 <p class="eyebrow">Customer Dashboard</p>
                 <h1 class="dashboard-title">Your Tea Lounge</h1>
                 <p class="dashboard-copy">
-                    Signed in as <strong>guest@mithocha.com</strong>. Explore drinks, check rewards, and follow your latest orders from one place.
+                    Signed in as <strong data-field="customerEmail">--</strong>. Explore drinks, rewards, and order updates from one place.
                 </p>
             </div>
             <div class="topbar-actions">
@@ -33,7 +33,7 @@
         <div class="welcome-strip">
             <div>
                 <p class="eyebrow eyebrow-light">Welcome Offer</p>
-                <p>Enjoy 15% off your next handcrafted drink and unlock double reward points before checkout closes tonight.</p>
+                <p data-field="welcomeOfferMessage">Promotional message placeholder</p>
             </div>
             <a class="secondary-button" href="#">Order Now</a>
         </div>
@@ -42,27 +42,27 @@
     <section class="card-grid two-col">
         <article class="dashboard-card">
             <h2 class="card-title">Quick Access</h2>
-            <p class="card-copy">The customer side focuses on ordering, rewards, and drink discovery.</p>
+            <p class="card-copy">Customer actions can be populated here after product, reward, and order data are connected.</p>
             <ul class="feature-list">
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">local_cafe</span>
                     <div class="feature-text">
                         <strong>Browse Signature Drinks</strong>
-                        <span>Explore brown sugar classics, fruit teas, matcha blends, and creamy cheese foam favorites.</span>
+                        <span data-field="browseDrinksDescription">Product description placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">loyalty</span>
                     <div class="feature-text">
                         <strong>Rewards Wallet</strong>
-                        <span>Track your loyalty balance, available coupons, and next milestone drink reward.</span>
+                        <span data-field="rewardsDescription">Rewards description placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">delivery_dining</span>
                     <div class="feature-text">
                         <strong>Order Tracking</strong>
-                        <span>See whether your drink is being prepared, packed, or already on the way.</span>
+                        <span data-field="orderTrackingDescription">Order tracking description placeholder</span>
                     </div>
                 </li>
             </ul>
@@ -70,27 +70,27 @@
 
         <article class="dashboard-card">
             <h2 class="card-title">Latest Activity</h2>
-            <p class="card-copy">A customer-focused view of recent visits and current perks.</p>
+            <p class="card-copy">Recent customer records can be rendered here from the database.</p>
             <ul class="activity-list">
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">receipt</span>
                     <div class="activity-text">
-                        <strong>Last order: Brown Sugar Boba Latte</strong>
-                        <span>Prepared successfully with less ice and extra cream foam.</span>
+                        <strong data-field="customerActivityTitle1">Activity title</strong>
+                        <span data-field="customerActivityDescription1">Activity description placeholder</span>
                     </div>
                 </li>
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">stars</span>
                     <div class="activity-text">
-                        <strong>Reward points available: 240</strong>
-                        <span>You are one purchase away from a free large handcrafted milk tea.</span>
+                        <strong data-field="customerActivityTitle2">Activity title</strong>
+                        <span data-field="customerActivityDescription2">Activity description placeholder</span>
                     </div>
                 </li>
                 <li class="activity-item">
                     <span class="activity-icon material-symbols-outlined">campaign</span>
                     <div class="activity-text">
-                        <strong>Weekend seasonal drop is live</strong>
-                        <span>Try the roasted oolong cream line before the limited batch runs out.</span>
+                        <strong data-field="customerActivityTitle3">Activity title</strong>
+                        <span data-field="customerActivityDescription3">Activity description placeholder</span>
                     </div>
                 </li>
             </ul>
@@ -98,20 +98,20 @@
 
         <article class="dashboard-card">
             <h2 class="card-title">Recommended For You</h2>
-            <p class="card-copy">Suggestions based on premium dessert-tea preferences.</p>
+            <p class="card-copy">Recommendation cards can be filled from customer preference data later.</p>
             <ul class="feature-list">
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">favorite</span>
                     <div class="feature-text">
-                        <strong>Velvet Matcha Cloud</strong>
-                        <span>Balanced matcha depth with smooth cream topping and soft sweetness.</span>
+                        <strong data-field="recommendationTitle1">Recommendation title</strong>
+                        <span data-field="recommendationDescription1">Recommendation description placeholder</span>
                     </div>
                 </li>
                 <li class="feature-item">
                     <span class="feature-icon material-symbols-outlined">cookie</span>
                     <div class="feature-text">
-                        <strong>Brown Sugar Pearl Special</strong>
-                        <span>A rich caramel profile with warm syrup ribbons and fresh chewy pearls.</span>
+                        <strong data-field="recommendationTitle2">Recommendation title</strong>
+                        <span data-field="recommendationDescription2">Recommendation description placeholder</span>
                     </div>
                 </li>
             </ul>
@@ -120,7 +120,7 @@
         <article class="dashboard-card">
             <div class="info-banner">
                 <span class="material-symbols-outlined">person</span>
-                <p>Non-admin logins land here automatically. This keeps customer browsing separate from store management tools.</p>
+                <p data-field="customerBannerMessage">Customer banner message placeholder</p>
             </div>
         </article>
     </section>

@@ -1,48 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%
-String action = request.getParameter("action");
-if ("logout".equals(action)) {
-    session.invalidate();
-    response.sendRedirect(request.getContextPath() + "/login");
-    return;
-}
-
-String role = (String) session.getAttribute("role");
-if ("admin".equals(role)) {
-    response.sendRedirect(request.getContextPath() + "/admin-dashboard");
-    return;
-}
-if ("customer".equals(role)) {
-    response.sendRedirect(request.getContextPath() + "/customer-dashboard");
-    return;
-}
-
-String errorMessage = null;
-String emailValue = "";
-
-if ("POST".equalsIgnoreCase(request.getMethod())) {
-    String email = request.getParameter("email");
-    String password = request.getParameter("password");
-
-    emailValue = email == null ? "" : email.trim();
-    String normalizedEmail = emailValue.toLowerCase();
-    String safePassword = password == null ? "" : password.trim();
-
-    if (normalizedEmail.isEmpty() || safePassword.isEmpty()) {
-        errorMessage = "Enter both email and password to continue.";
-    } else if ("admin@mithocha.com".equals(normalizedEmail) && "admin123".equals(safePassword)) {
-        session.setAttribute("role", "admin");
-        session.setAttribute("userEmail", emailValue);
-        response.sendRedirect(request.getContextPath() + "/admin-dashboard");
-        return;
-    } else {
-        session.setAttribute("role", "customer");
-        session.setAttribute("userEmail", emailValue);
-        response.sendRedirect(request.getContextPath() + "/customer-dashboard");
-        return;
-    }
-}
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +9,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/app.css">
+    <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <main class="page-shell login-layout">
@@ -76,7 +32,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             <div>
                 <h2 class="display-title">Mastering the Art of the Perfect Brew.</h2>
                 <p class="hero-text">
-                    The ultimate dashboard for managing your premium bubble tea experience. Secure, intuitive, and built for excellence.
+                    The entry UI is active. Database authentication can be added later without changing the layout.
                 </p>
             </div>
         </div>
@@ -86,21 +42,17 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         <div class="form-wrap">
             <p class="eyebrow">Access Portal</p>
             <h2 class="section-title">Welcome Back</h2>
-            <p class="section-copy">Use the admin account to enter the admin dashboard. Any other login opens the customer dashboard.</p>
-
-            <% if (errorMessage != null) { %>
-            <div class="login-message error"><%= errorMessage %></div>
-            <% } %>
+            <p class="section-copy">Authentication is disabled for now. Use the buttons below to open the required UI directly.</p>
 
             <div class="login-switch">
                 <span class="switch-item active">Login</span>
-                <a class="switch-item" href="<%= request.getContextPath() %>/register">Register</a>
+                <a class="switch-item" href="register">Register</a>
             </div>
 
-            <form class="login-form" method="post" action="<%= request.getContextPath() %>/login">
+            <div class="login-form">
                 <div class="field-group">
                     <label class="field-label" for="email">Email Address</label>
-                    <input class="field-input" id="email" name="email" type="email" placeholder="admin@mithocha.com" value="<%= emailValue %>">
+                    <input class="field-input" id="email" name="email" type="email" placeholder="Enter your email">
                 </div>
 
                 <div class="field-group">
@@ -116,19 +68,23 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
                     <span>Remember this device for 30 days</span>
                 </label>
 
-                <button class="primary-button" type="submit">
-                    Log In
+                <a class="primary-button" href="customer-dashboard">
+                    Open Customer Dashboard
                     <span class="material-symbols-outlined">arrow_forward</span>
-                </button>
-            </form>
+                </a>
 
-            <div class="form-divider">
-                <p>Admin demo: <strong>admin@mithocha.com / admin123</strong></p>
-                <p>Any other email/password goes to the customer dashboard.</p>
-                <p>Need an account? <a class="inline-link" href="<%= request.getContextPath() %>/register">Register Now</a></p>
+                <a class="secondary-button" href="admin-dashboard">
+                    Open Admin Dashboard
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
             </div>
 
-            <p class="footer-note">© 2026 MithoCha Beverages. All rights reserved.</p>
+            <div class="form-divider">
+                <p>The UI is running without database-backed login.</p>
+                <p>Need an account? <a class="inline-link" href="register">Register Now</a></p>
+            </div>
+
+            <p class="footer-note">Copyright 2026 MithoCha Beverages. All rights reserved.</p>
         </div>
     </section>
 </main>
