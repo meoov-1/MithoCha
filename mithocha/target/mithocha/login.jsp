@@ -3,17 +3,17 @@
 String action = request.getParameter("action");
 if ("logout".equals(action)) {
     session.invalidate();
-    response.sendRedirect(request.getContextPath() + "/login");
+    response.sendRedirect(request.getContextPath() + "/login.jsp");
     return;
 }
 
 String role = (String) session.getAttribute("role");
 if ("admin".equals(role)) {
-    response.sendRedirect(request.getContextPath() + "/admin-dashboard");
+    response.sendRedirect(request.getContextPath() + "/admin-dashboard.jsp");
     return;
 }
 if ("customer".equals(role)) {
-    response.sendRedirect(request.getContextPath() + "/customer-dashboard");
+    response.sendRedirect(request.getContextPath() + "/customer-dashboard.jsp");
     return;
 }
 
@@ -33,12 +33,12 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
     } else if ("admin@mithocha.com".equals(normalizedEmail) && "admin123".equals(safePassword)) {
         session.setAttribute("role", "admin");
         session.setAttribute("userEmail", emailValue);
-        response.sendRedirect(request.getContextPath() + "/admin-dashboard");
+        response.sendRedirect(request.getContextPath() + "/admin-dashboard.jsp");
         return;
     } else {
         session.setAttribute("role", "customer");
         session.setAttribute("userEmail", emailValue);
-        response.sendRedirect(request.getContextPath() + "/customer-dashboard");
+        response.sendRedirect(request.getContextPath() + "/customer-dashboard.jsp");
         return;
     }
 }
@@ -94,10 +94,10 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
             <div class="login-switch">
                 <span class="switch-item active">Login</span>
-                <a class="switch-item" href="<%= request.getContextPath() %>/register">Register</a>
+                <a class="switch-item" href="#">Register</a>
             </div>
 
-            <form class="login-form" method="post" action="<%= request.getContextPath() %>/login">
+            <form class="login-form" method="post" action="<%= request.getContextPath() %>/login.jsp">
                 <div class="field-group">
                     <label class="field-label" for="email">Email Address</label>
                     <input class="field-input" id="email" name="email" type="email" placeholder="admin@mithocha.com" value="<%= emailValue %>">
@@ -125,7 +125,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             <div class="form-divider">
                 <p>Admin demo: <strong>admin@mithocha.com / admin123</strong></p>
                 <p>Any other email/password goes to the customer dashboard.</p>
-                <p>Need an account? <a class="inline-link" href="<%= request.getContextPath() %>/register">Register Now</a></p>
+                <p>Need an account? <a class="inline-link" href="#">Register Now</a></p>
             </div>
 
             <p class="footer-note">© 2026 MithoCha Beverages. All rights reserved.</p>

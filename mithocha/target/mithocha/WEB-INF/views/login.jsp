@@ -1,4 +1,5 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE html>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 
 <html class="light" lang="en"><head>
     <meta charset="utf-8"/>
@@ -6,16 +7,6 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;700&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-    </style>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -76,26 +67,19 @@
                         "xl": "0.75rem",
                         "full": "9999px"
                     },
-                    "spacing": {
-                        "gutter": "24px",
-                        "margin-mobile": "20px",
-                        "container-max": "1200px",
-                        "margin-desktop": "64px",
-                        "unit": "8px"
-                    },
                     "fontFamily": {
-                        "label-md": ["Be Vietnam Pro"],
-                        "headline-xl": ["Noto Serif"],
                         "headline-lg": ["Noto Serif"],
                         "body-md": ["Be Vietnam Pro"],
+                        "headline-xl": ["Noto Serif"],
+                        "label-md": ["Be Vietnam Pro"],
                         "body-lg": ["Be Vietnam Pro"],
                         "headline-md": ["Noto Serif"]
                     },
                     "fontSize": {
-                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
                         "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
                         "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
                         "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
                         "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
                     }
@@ -103,47 +87,58 @@
             },
         }
     </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
 </head>
-<body class="bg-background text-on-background selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<body class="bg-background text-on-background selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen">
 <main class="min-h-screen flex flex-col md:flex-row">
-    <!-- Left Side: Visual Experience -->
+    <!-- Left Side: Visual Experience (Mirrored from SCREEN_31) -->
     <section class="relative w-full md:w-1/2 lg:w-3/5 h-64 md:h-screen overflow-hidden">
         <img alt="Premium bubble tea" class="absolute inset-0 w-full h-full object-cover" data-alt="Close-up of a premium bubble tea with brown sugar boba pearls and rich cream foam in a glass vessel with soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACGxO8xr0nyMb65vac8rXshEy74n8NXLgzH1WhC4z37UKePJS7CwUxDz5DCbTL3wvukoMYezjU_RcKkViyCcSOScg-rODKf1DB1OziEjE96dwUligoPxR0bTMwwfde3a4VJGl_lBoTKjMM3AtwoYv-fVn_LNuRrAshJXetlR6v70okFw4FkpsaMHqdXg8Az-8JmE0B8b3fWFec_7qsjsh3OO2gYjg5OP2Fe-LUwU4YN4fbd8qxxLTlifJznG3_MvRyXRWz2k-YB7YY"/>
         <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent"></div>
         <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-16 space-y-4">
             <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-secondary-fixed-dim text-4xl" data-icon="coffee">coffee</span>
+                <span class="material-symbols-outlined text-secondary-fixed-dim text-4xl">coffee</span>
                 <h1 class="font-headline-md text-headline-md text-surface tracking-tight">MithoCha</h1>
             </div>
             <div class="max-w-xl">
-                <h2 class="font-headline-xl text-headline-xl text-surface mb-4">Join the Brewmaster Team</h2>
+                <h2 class="font-headline-xl text-headline-xl text-surface mb-4">Mastering the Art of the Perfect Brew.</h2>
                 <p class="font-body-lg text-body-lg text-surface-container/90 max-w-md">
-                    Step into our digital tea house. Manage your craft, refine your brews, and elevate the MithoCha experience for every guest.
+                    The ultimate dashboard for managing your premium bubble tea experience. Secure, intuitive, and built for excellence.
                 </p>
             </div>
         </div>
-        <!-- Flavor Profile Tags for Premium Feel -->
+        <!-- Flavor Profile Tags -->
         <div class="absolute top-8 left-8 hidden md:flex gap-2">
             <span class="px-3 py-1 bg-surface/10 backdrop-blur-md rounded-full font-label-md text-label-md text-surface border border-surface/20">Floral</span>
             <span class="px-3 py-1 bg-surface/10 backdrop-blur-md rounded-full font-label-md text-label-md text-surface border border-surface/20">Nutty</span>
             <span class="px-3 py-1 bg-surface/10 backdrop-blur-md rounded-full font-label-md text-label-md text-surface border border-surface/20">Velvety</span>
         </div>
     </section>
-    <!-- Right Side: Registration Form -->
+    <!-- Right Side: Login Form (Styled to match SCREEN_31 registration) -->
     <section class="w-full md:w-1/2 lg:w-2/5 bg-surface flex flex-col justify-center px-6 py-12 md:px-16 lg:px-24">
         <div class="w-full max-w-md mx-auto space-y-10">
             <div class="space-y-2">
-                <h3 class="font-headline-lg text-headline-lg text-primary">Create Account</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant">Start your journey as an admin partner today.</p>
+                <h3 class="font-headline-lg text-headline-lg text-primary">Welcome Back</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">Please enter your credentials to access the admin panel.</p>
+            </div>
+            <!-- Simple Login/Register toggle matches SCREEN_31 style logic -->
+            <div class="flex gap-1 p-1 bg-surface-container-low rounded-lg">
+                <button class="flex-1 py-2.5 px-4 text-label-md rounded-md bg-surface-container-lowest text-on-surface shadow-sm transition-all duration-200">
+                    Login
+                </button>
+                <button class="flex-1 py-2.5 px-4 text-label-md rounded-md text-on-surface-variant hover:text-on-surface transition-all duration-200">
+                    Register
+                </button>
             </div>
             <form class="space-y-6">
-                <!-- Full Name -->
-                <div class="space-y-2">
-                    <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block" for="fullname">Full Name</label>
-                    <div class="relative">
-                        <input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="fullname" name="fullname" placeholder="Arthur Morgan" type="text"/>
-                    </div>
-                </div>
                 <!-- Email Address -->
                 <div class="space-y-2">
                     <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block" for="email">Email Address</label>
@@ -153,45 +148,38 @@
                 </div>
                 <!-- Password -->
                 <div class="space-y-2">
-                    <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block" for="password">Password</label>
+                    <div class="flex justify-between items-center">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block" for="password">Password</label>
+                        <a class="text-label-md text-secondary hover:underline" href="#">Forgot?</a>
+                    </div>
                     <div class="relative">
                         <input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="password" name="password" placeholder="••••••••" type="password"/>
                         <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-secondary transition-colors" type="button">
-                            <span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+                            <span class="material-symbols-outlined text-xl">visibility</span>
                         </button>
                     </div>
                 </div>
-                <!-- Confirm Password -->
-                <div class="space-y-2">
-                    <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block" for="confirm-password">Confirm Password</label>
-                    <div class="relative">
-                        <input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="confirm-password" name="confirm-password" placeholder="••••••••" type="password"/>
-                    </div>
-                </div>
-                <!-- Terms & Conditions -->
-                <div class="flex items-start gap-3">
-                    <input class="mt-1 h-4 w-4 rounded border-outline-variant text-secondary focus:ring-secondary/20 bg-surface-container-low" id="terms" name="terms" type="checkbox"/>
-                    <label class="font-body-md text-body-md text-on-surface-variant" for="terms">
-                        I agree to the <a class="text-secondary hover:underline" href="#">Terms of Service</a> and <a class="text-secondary hover:underline" href="#">Privacy Policy</a>.
+                <!-- Remember Me -->
+                <div class="flex items-center gap-3">
+                    <input class="h-4 w-4 rounded border-outline-variant text-secondary focus:ring-secondary/20 bg-surface-container-low" id="remember" name="remember" type="checkbox"/>
+                    <label class="font-body-md text-body-md text-on-surface-variant cursor-pointer select-none" for="remember">
+                        Remember this device for 30 days
                     </label>
                 </div>
-                <!-- Register Button -->
-                <button class="w-full bg-secondary text-on-secondary font-label-md text-label-md py-4 rounded-lg shadow-lg shadow-secondary/10 hover:bg-secondary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group" type="submit">
-                    Register
-                    <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
-                </button>
+                <!-- Sign In Button -->
+                <button class="w-full bg-secondary text-on-secondary font-label-md text-label-md py-4 rounded-lg shadow-lg shadow-secondary/10 hover:bg-secondary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group" type="submit">Log In <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span></button>
             </form>
             <div class="pt-6 border-t border-outline-variant/30 text-center">
                 <p class="font-body-md text-body-md text-on-surface-variant">
-                    Already have an account?
+                    Don't have an account yet?
                     <a class="text-secondary font-bold hover:underline ml-1 inline-flex items-center gap-1 group" href="#">
-                        Back to Login
-                        <span class="material-symbols-outlined text-sm opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" data-icon="login">login</span>
+                        Register Now
+                        <span class="material-symbols-outlined text-sm opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">app_registration</span>
                     </a>
                 </p>
             </div>
         </div>
-        <!-- Footer-like text for transactional context -->
+        <!-- Footer Branding -->
         <div class="mt-auto pt-12">
             <p class="font-label-md text-label-md text-on-surface-variant/50 text-center uppercase tracking-[0.2em] text-[10px]">
                 © 2024 MithoCha Beverages. All rights reserved.
@@ -199,8 +187,9 @@
         </div>
     </section>
 </main>
-<!-- Aesthetic Decorative Element -->
-<div class="fixed bottom-10 right-10 pointer-events-none opacity-5 hidden lg:block">
-    <span class="material-symbols-outlined text-[200px]" data-icon="eco">eco</span>
+<!-- System Status Badge -->
+<div class="fixed bottom-8 right-8 z-20 flex items-center gap-3 bg-surface-container-highest px-4 py-2 rounded-full border border-outline-variant/30 backdrop-blur-md bg-opacity-80 shadow-sm">
+    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+    <span class="text-label-md text-on-surface-variant">System Status: Secure</span>
 </div>
 </body></html>
