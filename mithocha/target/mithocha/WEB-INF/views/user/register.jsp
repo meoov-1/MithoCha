@@ -49,7 +49,14 @@
                 <a class="switch-item" href="${pageContext.request.contextPath}/login">Login</a>
             </div>
 
-            <form class="login-form" method="post" action="">
+            <%-- Error messages from AuthServlet --%>
+            <% if (request.getAttribute("errorMessage") != null) { %>
+                <div class="form-error" style="color:#c0392b;margin-bottom:12px;">
+                    ${errorMessage}
+                </div>
+            <% } %>
+
+            <form class="login-form" method="post" action="${pageContext.request.contextPath}/register">
                 <div class="field-group">
                     <label class="field-label" for="name">Full Name</label>
                     <input class="field-input" id="name" name="name" type="text" placeholder="Enter your full name" required>

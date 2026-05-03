@@ -293,6 +293,41 @@ main,
   gap: 20px;
 }
 
+.empty-state {
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  min-height: 320px;
+  border: 1px dashed rgba(125, 86, 45, 0.28);
+  border-radius: 28px;
+  background: rgba(255, 248, 246, 0.82);
+  padding: 28px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-state .material-symbols-outlined {
+  font-size: 42px;
+  color: var(--secondary);
+}
+
+.empty-state h2 {
+  color: var(--primary);
+  font-family: "Noto Serif", serif;
+  font-size: clamp(28px, 4vw, 38px);
+}
+
+.empty-state p {
+  max-width: 560px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.empty-action,
+.product-link {
+  text-decoration: none;
+}
+
 /* ============================================================
    PRODUCT CARD
    ============================================================ */
@@ -431,6 +466,17 @@ main,
 .primary-action:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
+}
+
+.product-link {
+  background: rgba(125, 86, 45, 0.12);
+  color: var(--secondary);
+  box-shadow: none;
+}
+
+.product-link:hover {
+  filter: none;
+  background: rgba(125, 86, 45, 0.18);
 }
 
 .icon-action {

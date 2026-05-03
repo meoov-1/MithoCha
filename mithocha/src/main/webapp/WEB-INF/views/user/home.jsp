@@ -176,5 +176,6 @@
 </footer>
 
 
+<script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
 </body>
 </html>

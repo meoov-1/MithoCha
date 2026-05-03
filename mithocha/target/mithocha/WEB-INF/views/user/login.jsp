@@ -47,7 +47,19 @@
                 <a class="switch-item" href="${pageContext.request.contextPath}/register">Register</a>
             </div>
 
-            <form class="login-form" method="get" action="${pageContext.request.contextPath}/dashboard">
+            <%-- Error / success messages from AuthServlet --%>
+            <% if (request.getAttribute("errorMessage") != null) { %>
+                <div class="form-error" style="color:#c0392b;margin-bottom:12px;">
+                    ${errorMessage}
+                </div>
+            <% } %>
+            <% if ("true".equals(request.getParameter("registered"))) { %>
+                <div class="form-success" style="color:#27ae60;margin-bottom:12px;">
+                    Account created! Please log in.
+                </div>
+            <% } %>
+
+            <form class="login-form" method="post" action="${pageContext.request.contextPath}/login">
                 <div class="field-group">
                     <label class="field-label" for="email">Email Address</label>
                     <input class="field-input" id="email" name="email" type="email" placeholder="Enter your email" required>
