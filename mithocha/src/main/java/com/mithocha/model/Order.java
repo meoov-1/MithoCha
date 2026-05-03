@@ -1,7 +1,11 @@
 package com.mithocha.model;
 
+import com.mithocha.util.JsonUtil;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * POJO for the `orders` table.
@@ -30,6 +34,8 @@ public class Order {
     private String     items;           // raw JSON string
     private String     payment;         // raw JSON string
     private String     shippingAddress; // raw JSON string
+    private List<OrderItem> orderItems = new ArrayList<>();
+    private Payment paymentRecord;
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
@@ -71,14 +77,30 @@ public class Order {
     public String getStatus()                        { return status; }
     public void setStatus(String status)             { this.status = status; }
 
-    public String getItems()                         { return items; }
+    public String getItems() {
+        if (items != null) {
+            return items;
+        }
+        return orderItems.isEmpty() ? null : JsonUtil.toJson(orderItems);
+    }
     public void setItems(String items)               { this.items = items; }
 
-    public String getPayment()                       { return payment; }
+    public String getPayment() {
+        if (payment != null) {
+            return payment;
+        }
+        return paymentRecord == null ? null : JsonUtil.toJson(paymentRecord);
+    }
     public void setPayment(String payment)           { this.payment = payment; }
 
     public String getShippingAddress()                           { return shippingAddress; }
     public void setShippingAddress(String shippingAddress)       { this.shippingAddress = shippingAddress; }
+
+    public List<OrderItem> getOrderItems()                      { return orderItems; }
+    public void setOrderItems(List<OrderItem> orderItems)       { this.orderItems = orderItems == null ? new ArrayList<>() : new ArrayList<>(orderItems); }
+
+    public Payment getPaymentRecord()                           { return paymentRecord; }
+    public void setPaymentRecord(Payment paymentRecord)         { this.paymentRecord = paymentRecord; }
 
     @Override
     public String toString() {

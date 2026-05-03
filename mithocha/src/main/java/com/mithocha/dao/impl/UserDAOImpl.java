@@ -119,6 +119,24 @@ public class UserDAOImpl implements UserDAO {
         return false;
     }
 
+    @Override
+    public boolean updatePassword(int userId, String hashedPassword) {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        Connection conn = null;
+        try {
+            conn = DBUtil.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, hashedPassword);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[UserDAOImpl] updatePassword error: " + e.getMessage());
+        } finally {
+            DBUtil.close(conn);
+        }
+        return false;
+    }
+
     // ── DELETE ────────────────────────────────────────────────────────────────
 
     @Override
@@ -152,6 +170,25 @@ public class UserDAOImpl implements UserDAO {
             return rs.next();
         } catch (SQLException e) {
             System.err.println("[UserDAOImpl] emailExists error: " + e.getMessage());
+        } finally {
+            DBUtil.close(conn);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean emailExistsForOtherUser(int userId, String email) {
+        String sql = "SELECT 1 FROM users WHERE email = ? AND user_id <> ?";
+        Connection conn = null;
+        try {
+            conn = DBUtil.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setInt(2, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println("[UserDAOImpl] emailExistsForOtherUser error: " + e.getMessage());
         } finally {
             DBUtil.close(conn);
         }

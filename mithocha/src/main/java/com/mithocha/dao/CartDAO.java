@@ -1,12 +1,23 @@
 package com.mithocha.dao;
 
+import com.mithocha.model.CartItem;
+
+import java.util.List;
+
 /**
- * CartDAO – the cart is managed client-side (localStorage / session JSON)
- * and is only persisted when an order is placed.
- *
- * This interface is intentionally minimal; extend it if you later add a
- * server-side `cart` table.
+ * CartDAO – contract for server-side cart persistence.
  */
 public interface CartDAO {
-    // Reserved for future server-side cart persistence.
+
+    int insertCartItem(CartItem cartItem);
+
+    CartItem findById(int userId, int cartItemId);
+
+    List<CartItem> findByUserId(int userId);
+
+    boolean updateCartItem(CartItem cartItem);
+
+    boolean deleteCartItem(int userId, int cartItemId);
+
+    boolean clearCart(int userId);
 }

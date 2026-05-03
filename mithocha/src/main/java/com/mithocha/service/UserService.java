@@ -48,6 +48,15 @@ public class UserService {
         User user = userDAO.findByEmail(email.trim().toLowerCase());
         if (user == null) return null;
         if (!PasswordUtil.verifyPassword(password, user.getPassword())) return null;
+        if (PasswordUtil.needsRehash(user.getPassword())) {
+            String upgradedHash = PasswordUtil.hashPassword(password);
+            userDAO.updatePassword(user.getUserId(), upgradedHash);
+            user.setPassword(upgradedHash);
+        }
         return user;
+    }
+
+    public User findById(int userId) {
+        return userDAO.findById(userId);
     }
 }

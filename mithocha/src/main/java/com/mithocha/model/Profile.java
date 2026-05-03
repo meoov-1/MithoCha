@@ -1,6 +1,9 @@
 package com.mithocha.model;
 
+import com.mithocha.util.ValidationUtil;
+
 import java.sql.Date;
+import java.util.Base64;
 
 /**
  * POJO for the `profile` table.
@@ -28,6 +31,8 @@ public class Profile {
     private String city;
     private String postalCode;
     private String profileImageUrl;
+    private byte[] profileImageData;
+    private String profileImageContentType;
     private String coverImageUrl;
     private String bio;
     private Date   dateOfBirth;
@@ -78,8 +83,27 @@ public class Profile {
     public String getPostalCode()                    { return postalCode; }
     public void setPostalCode(String postalCode)     { this.postalCode = postalCode; }
 
-    public String getProfileImageUrl()                           { return profileImageUrl; }
+    public String getProfileImageUrl() {
+        if (!ValidationUtil.isNullOrEmpty(profileImageUrl)) {
+            return profileImageUrl;
+        }
+        if (profileImageData != null && profileImageData.length > 0
+                && !ValidationUtil.isNullOrEmpty(profileImageContentType)) {
+            return "data:" + profileImageContentType + ";base64,"
+                    + Base64.getEncoder().encodeToString(profileImageData);
+        }
+        return null;
+    }
     public void setProfileImageUrl(String profileImageUrl)       { this.profileImageUrl = profileImageUrl; }
+    public String getStoredProfileImageUrl()                     { return profileImageUrl; }
+
+    public byte[] getProfileImageData()                          { return profileImageData; }
+    public void setProfileImageData(byte[] profileImageData)     { this.profileImageData = profileImageData; }
+
+    public String getProfileImageContentType()                   { return profileImageContentType; }
+    public void setProfileImageContentType(String profileImageContentType) {
+        this.profileImageContentType = profileImageContentType;
+    }
 
     public String getCoverImageUrl()                             { return coverImageUrl; }
     public void setCoverImageUrl(String coverImageUrl)           { this.coverImageUrl = coverImageUrl; }

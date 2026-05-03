@@ -1,6 +1,8 @@
 package com.mithocha.dao;
 
 import com.mithocha.model.Order;
+import com.mithocha.model.OrderItem;
+import com.mithocha.model.Payment;
 import java.util.List;
 
 /**
@@ -19,6 +21,15 @@ public interface OrderDAO {
 
     /** Return all orders (admin use). */
     List<Order> findAll();
+
+    /** Return all order items for an order. */
+    List<OrderItem> findItemsByOrderId(int orderId);
+
+    /** Return the payment record for an order, if it exists. */
+    Payment findPaymentByOrderId(int orderId);
+
+    /** Update the order JSON snapshots used by the older page layer. */
+    boolean updateSnapshots(int orderId, String itemsJson, String paymentJson, String shippingAddress);
 
     /** Update the status of an order ('pending' → 'completed' / 'cancelled'). */
     boolean updateStatus(int orderId, String status);

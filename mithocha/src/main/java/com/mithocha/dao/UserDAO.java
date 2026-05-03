@@ -23,9 +23,15 @@ public interface UserDAO {
     /** Update name, email, and role for an existing user. */
     boolean updateUser(User user);
 
+    /** Update only the password hash for an existing user. */
+    boolean updatePassword(int userId, String hashedPassword);
+
     /** Delete a user by id. */
     boolean deleteUser(int userId);
 
     /** Check whether an email is already registered. */
     boolean emailExists(String email);
+
+    /** Check whether the email belongs to another user. */
+    boolean emailExistsForOtherUser(int userId, String email);
 }

@@ -17,8 +17,9 @@ public class ProfileDAOImpl implements ProfileDAO {
     public int insertProfile(Profile profile) {
         String sql = "INSERT INTO profile "
                 + "(user_id, phone, address, city, postal_code, "
-                + " profile_image_url, cover_image_url, bio, date_of_birth) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + " profile_image_url, profile_image_data, profile_image_content_type, "
+                + " cover_image_url, bio, date_of_birth) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         try {
             conn = DBUtil.getConnection();
@@ -28,10 +29,12 @@ public class ProfileDAOImpl implements ProfileDAO {
             ps.setString(3, profile.getAddress());
             ps.setString(4, profile.getCity());
             ps.setString(5, profile.getPostalCode());
-            ps.setString(6, profile.getProfileImageUrl());
-            ps.setString(7, profile.getCoverImageUrl());
-            ps.setString(8, profile.getBio());
-            ps.setDate(9,   profile.getDateOfBirth());
+            ps.setString(6, profile.getStoredProfileImageUrl());
+            ps.setBytes(7, profile.getProfileImageData());
+            ps.setString(8, profile.getProfileImageContentType());
+            ps.setString(9, profile.getCoverImageUrl());
+            ps.setString(10, profile.getBio());
+            ps.setDate(11,   profile.getDateOfBirth());
 
             int rows = ps.executeUpdate();
             if (rows > 0) {
@@ -71,8 +74,8 @@ public class ProfileDAOImpl implements ProfileDAO {
     @Override
     public boolean updateProfile(Profile profile) {
         String sql = "UPDATE profile SET phone=?, address=?, city=?, postal_code=?, "
-                + "profile_image_url=?, cover_image_url=?, bio=?, date_of_birth=? "
-                + "WHERE user_id=?";
+                + "profile_image_url=?, profile_image_data=?, profile_image_content_type=?, "
+                + "cover_image_url=?, bio=?, date_of_birth=? WHERE user_id=?";
         Connection conn = null;
         try {
             conn = DBUtil.getConnection();
@@ -81,11 +84,13 @@ public class ProfileDAOImpl implements ProfileDAO {
             ps.setString(2, profile.getAddress());
             ps.setString(3, profile.getCity());
             ps.setString(4, profile.getPostalCode());
-            ps.setString(5, profile.getProfileImageUrl());
-            ps.setString(6, profile.getCoverImageUrl());
-            ps.setString(7, profile.getBio());
-            ps.setDate(8,   profile.getDateOfBirth());
-            ps.setInt(9,    profile.getUserId());
+            ps.setString(5, profile.getStoredProfileImageUrl());
+            ps.setBytes(6, profile.getProfileImageData());
+            ps.setString(7, profile.getProfileImageContentType());
+            ps.setString(8, profile.getCoverImageUrl());
+            ps.setString(9, profile.getBio());
+            ps.setDate(10,   profile.getDateOfBirth());
+            ps.setInt(11,    profile.getUserId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("[ProfileDAOImpl] updateProfile error: " + e.getMessage());
@@ -117,7 +122,7 @@ public class ProfileDAOImpl implements ProfileDAO {
     // ── HELPERS ───────────────────────────────────────────────────────────────
 
     private Profile mapRow(ResultSet rs) throws SQLException {
-        return new Profile(
+        Profile profile = new Profile(
             rs.getInt("profile_id"),
             rs.getInt("user_id"),
             rs.getString("phone"),
@@ -129,5 +134,8 @@ public class ProfileDAOImpl implements ProfileDAO {
             rs.getString("bio"),
             rs.getDate("date_of_birth")
         );
+        profile.setProfileImageData(rs.getBytes("profile_image_data"));
+        profile.setProfileImageContentType(rs.getString("profile_image_content_type"));
+        return profile;
     }
 }
