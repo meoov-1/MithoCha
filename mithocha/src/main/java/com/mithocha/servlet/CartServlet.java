@@ -73,6 +73,12 @@ public class CartServlet extends HttpServlet {
                 shippingJson, totalAmount);
 
         if (orderId > 0) {
+            // Clear the cart cookie on successful order
+            jakarta.servlet.http.Cookie cartCookie = new jakarta.servlet.http.Cookie("mithocha_cart", "");
+            cartCookie.setMaxAge(0);
+            cartCookie.setPath("/");
+            response.addCookie(cartCookie);
+
             response.sendRedirect(request.getContextPath()
                     + "/profile?orderPlaced=true&orderId=" + orderId);
         } else {

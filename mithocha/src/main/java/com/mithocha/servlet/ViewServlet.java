@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
-@WebServlet("/admin/*")
+@WebServlet("/legacy-admin-view/*")
 public class ViewServlet extends HttpServlet {
 
     @Override

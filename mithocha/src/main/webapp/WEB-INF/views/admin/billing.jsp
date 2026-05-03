@@ -12,22 +12,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin/admin.css">
   <style>
-    /* Billing-specific inline detail expand */
-    .billing-detail {
-      display: none;
-      background: var(--surface-container-low);
+    .billing-detail { display:none; background:var(--surface-container-low); }
+    .billing-detail.open { display:table-row; }
+    .billing-detail td { padding:16px 20px !important; border-bottom:1px solid rgba(131,116,111,.1) !important; }
+    .detail-dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+    .detail-dl dt { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--on-surface-variant); margin-bottom:4px; }
+    .detail-dl dd { font-size:14px; color:#271814; font-weight:500; margin:0; word-break:break-word; }
+    /* Mark-as-Paid modal (reuse same styles as orders page) */
+    .paid-overlay { display:none; position:fixed; inset:0; background:rgba(39,24,20,.5); z-index:500; backdrop-filter:blur(3px); }
+    .paid-overlay.open { display:block; }
+    .paid-modal {
+      display:none; position:fixed; top:50%; left:50%;
+      transform:translate(-50%,-48%) scale(.96); z-index:600;
+      width:min(460px,calc(100vw - 32px)); background:#fff; border-radius:20px;
+      box-shadow:0 28px 70px rgba(39,24,20,.2); opacity:0;
+      transition:transform .25s cubic-bezier(.34,1.56,.64,1), opacity .22s;
     }
-    .billing-detail.open {
-      display: table-row;
-    }
-    .billing-detail td {
-      padding: 16px 20px !important;
-      border-bottom: 1px solid rgba(131,116,111,0.1) !important;
-    }
-    .detail-dl {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
+    .paid-modal.open { display:block; transform:translate(-50%,-50%) scale(1); opacity:1; }
+    .paid-modal-head { background:linear-gradient(135deg,#2f7d32,#4caf50); padding:24px 28px 18px; color:#fff; }
+    .paid-modal-head h2 { font-family:'Noto Serif',serif; font-size:20px; margin:0 0 4px; }
+    .paid-modal-head p  { margin:0; font-size:13px; opacity:.88; }
+    .paid-modal-body { padding:22px 28px 8px; display:flex; flex-direction:column; gap:14px; }
+    .paid-modal-foot { display:flex; gap:10px; padding:16px 28px 24px; }
+    .paid-modal-foot .btn-cancel { flex:1; padding:12px; border:1.5px solid #d5c3bd; border-radius:10px; background:transparent; color:#504440; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .paid-modal-foot .btn-confirm { flex:2; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px; border:none; border-radius:10px; background:#2f7d32; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  </style>
     }
     .detail-dl dt {
       font-size: 11px;
@@ -233,6 +242,15 @@
                           <span class="material-symbols-outlined" style="font-size:15px;">expand_more</span>
                           View Details
                         </button>
+                        <%-- Mark as Paid (only for pending orders) --%>
+                        <c:if test="${order.status == 'pending'}">
+                          <button type="button"
+                                  onclick="openPaidModal(${order.orderId}, 'Rs. ${order.totalAmount}')"
+                                  style="background:rgba(47,125,50,.12);color:#246328;border:none;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:4px;">
+                            <span class="material-symbols-outlined" style="font-size:15px;">check_circle</span>
+                            Mark Paid
+                          </button>
+                        </c:if>
                       </td>
                     </tr>
 
@@ -366,6 +384,68 @@
     var countEl = document.getElementById('billingCount');
     if (countEl) countEl.textContent = rows.length + ' record(s)';
   });
+</script>
+
+<%-- ── Mark-as-Paid Modal ── --%>
+<div id="paidOverlay" class="paid-overlay" onclick="closePaidModal()"></div>
+<div id="paidModal" class="paid-modal" role="dialog" aria-modal="true">
+  <div class="paid-modal-head">
+    <span class="material-symbols-outlined" style="font-size:36px;display:block;margin-bottom:8px;">payments</span>
+    <h2>Mark Order as Paid</h2>
+    <p id="paidModalSubtitle">Confirm payment receipt for this order.</p>
+  </div>
+  <div class="paid-modal-body">
+    <div class="form-group">
+      <label class="form-label">Payment Method</label>
+      <select id="paidMethod" class="form-control">
+        <option value="cash">Cash on Delivery (collected)</option>
+        <option value="fonepay">Fonepay</option>
+        <option value="khalti">Khalti</option>
+        <option value="esewa">eSewa</option>
+        <option value="bank_transfer">Bank Transfer</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Transaction / Reference ID <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+      <input type="text" id="paidTxnId" class="form-control" placeholder="e.g. TXN-20260503-001">
+    </div>
+  </div>
+  <form id="paidForm" method="post" action="${pageContext.request.contextPath}/admin/billing">
+    <input type="hidden" name="action"        value="markPaid">
+    <input type="hidden" name="orderId"       id="paidOrderId">
+    <input type="hidden" name="paymentMethod" id="paidMethodHidden">
+    <input type="hidden" name="transactionId" id="paidTxnHidden">
+    <div class="paid-modal-foot">
+      <button type="button" class="btn-cancel" onclick="closePaidModal()">Cancel</button>
+      <button type="button" class="btn-confirm" onclick="submitPaid()">
+        <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+        Confirm Payment
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function openPaidModal(orderId, amount) {
+    document.getElementById('paidOrderId').value = orderId;
+    document.getElementById('paidModalSubtitle').textContent = 'Order #' + orderId + ' — ' + amount;
+    document.getElementById('paidTxnId').value = '';
+    document.getElementById('paidModal').classList.add('open');
+    document.getElementById('paidOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePaidModal() {
+    document.getElementById('paidModal').classList.remove('open');
+    document.getElementById('paidOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function submitPaid() {
+    document.getElementById('paidMethodHidden').value = document.getElementById('paidMethod').value;
+    document.getElementById('paidTxnHidden').value    = document.getElementById('paidTxnId').value.trim() || ('ADMIN-' + Date.now());
+    document.getElementById('paidForm').submit();
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePaidModal(); });
 </script>
 
 </body>

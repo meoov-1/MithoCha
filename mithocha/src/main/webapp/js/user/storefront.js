@@ -1,25 +1,64 @@
 (function (window, document) {
-  const CART_KEY = "mithocha-cart";
+  const CART_KEY    = "mithocha_cart";   // cookie name (underscores — no spaces)
+  const CART_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
+
+  /* ── Cookie helpers ─────────────────────────────────────────────────── */
+
+  function setCookie(name, value, maxAgeSeconds) {
+    var encoded = encodeURIComponent(value);
+    var expires = maxAgeSeconds ? "; max-age=" + maxAgeSeconds : "";
+    document.cookie = name + "=" + encoded + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+    var prefix = name + "=";
+    var cookies = document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++) {
+      var c = cookies[i].trim();
+      if (c.indexOf(prefix) === 0) {
+        try {
+          return decodeURIComponent(c.substring(prefix.length));
+        } catch (e) {
+          return "";
+        }
+      }
+    }
+    return "";
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + "=; max-age=0; path=/; SameSite=Lax";
+  }
+
+  /* ── Cart read / write ──────────────────────────────────────────────── */
 
   function readCart() {
     try {
-      const raw = window.localStorage.getItem(CART_KEY);
-      if (!raw) {
-        return [];
-      }
-      const parsed = JSON.parse(raw);
+      var raw = getCookie(CART_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
+    } catch (e) {
       return [];
     }
   }
 
   function writeCart(items) {
-    const normalised = Array.isArray(items) ? items : [];
-    window.localStorage.setItem(CART_KEY, JSON.stringify(normalised));
+    var normalised = Array.isArray(items) ? items : [];
+    try {
+      setCookie(CART_KEY, JSON.stringify(normalised), CART_MAX_AGE);
+    } catch (e) {
+      // cookie too large — trim to first 20 items as a safety net
+      setCookie(CART_KEY, JSON.stringify(normalised.slice(0, 20)), CART_MAX_AGE);
+    }
     updateCartCount();
     window.dispatchEvent(new CustomEvent("mithocha:cart-updated", { detail: normalised }));
     return normalised;
+  }
+
+  function clearCartCookie() {
+    deleteCookie(CART_KEY);
+    updateCartCount();
   }
 
   function lineKey(item) {
@@ -130,6 +169,7 @@
     CART_KEY: CART_KEY,
     getCart: readCart,
     saveCart: writeCart,
+    clearCart: clearCartCookie,
     addCartItem: addCartItem,
     updateCartCount: updateCartCount,
     itemCount: itemCount,

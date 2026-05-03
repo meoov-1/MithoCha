@@ -1,4 +1,5 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.mithocha.model.User,com.mithocha.model.Profile,com.mithocha.util.ValidationUtil" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+         import="com.mithocha.model.User,com.mithocha.model.Profile,com.mithocha.util.ValidationUtil,com.mithocha.util.SessionUtil" %>
 <%
     User user = (User) request.getAttribute("user");
     Profile profile = (Profile) request.getAttribute("profile");
@@ -183,166 +184,265 @@
 </footer>
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+
+<%-- ── COD Confirmation Modal ── --%>
+<div id="codOverlay" class="cod-overlay" role="presentation"></div>
+<div id="codModal" class="cod-modal" role="dialog" aria-modal="true" aria-labelledby="codModalTitle">
+    <div class="cod-modal-header">
+        <span class="material-symbols-outlined cod-modal-icon">local_shipping</span>
+        <h2 id="codModalTitle">Confirm Cash on Delivery</h2>
+        <p>Please verify your details before we place your order.</p>
+    </div>
+
+    <div class="cod-modal-body">
+        <div class="cod-info-row">
+            <span class="material-symbols-outlined">info</span>
+            <p>Our delivery team will collect payment when your order arrives. Please have the exact amount ready.</p>
+        </div>
+
+        <div class="cod-field">
+            <label for="codConfirmName">Full Name</label>
+            <input id="codConfirmName" type="text" placeholder="Your full name" autocomplete="name">
+        </div>
+        <div class="cod-field">
+            <label for="codConfirmPhone">Phone Number</label>
+            <input id="codConfirmPhone" type="tel" placeholder="+977 98XXXXXXXX" autocomplete="tel">
+        </div>
+
+        <p id="codModalError" class="cod-error" style="display:none;"></p>
+    </div>
+
+    <div class="cod-modal-footer">
+        <button id="codCancelBtn" class="cod-btn-cancel" type="button">Cancel</button>
+        <button id="codSubmitBtn" class="cod-btn-confirm" type="button">
+            <span class="material-symbols-outlined">check_circle</span>
+            Place COD Order
+        </button>
+    </div>
+</div>
+
 <script>
+    /* ================================================================
+       MithoCha Cart Page — cookie-based cart + COD confirmation popup
+       ================================================================ */
     (function () {
-        const store = window.MithoChaStorefront;
-        const deliveryFee = 50;
-        const cartContainer = document.getElementById("cartItemsContainer");
-        const summaryContainer = document.getElementById("summaryItemsContainer");
-        const checkoutStatus = document.getElementById("checkoutStatus");
+        var store    = window.MithoChaStorefront;
+        var DELIVERY = 50;
 
-        function escapeHtml(value) {
-            return String(value || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#x27;");
+        /* ── DOM refs ── */
+        var cartContainer    = document.getElementById("cartItemsContainer");
+        var summaryContainer = document.getElementById("summaryItemsContainer");
+        var checkoutStatus   = document.getElementById("checkoutStatus");
+        var confirmBtn       = document.getElementById("confirmOrderBtn");
+        var codModal         = document.getElementById("codModal");
+        var codOverlay       = document.getElementById("codOverlay");
+
+        /* ── Helpers ── */
+        function esc(v) {
+            return String(v || "")
+                .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");
         }
-
-        function showStatus(message) {
-            checkoutStatus.textContent = message;
-            checkoutStatus.classList.remove("hidden");
+        function showError(msg) {
+            checkoutStatus.textContent = msg;
+            checkoutStatus.classList.remove("hidden","success");
             checkoutStatus.classList.add("error");
+            checkoutStatus.scrollIntoView({ behavior:"smooth", block:"nearest" });
         }
 
-        function updatePaymentState() {
-            document.querySelectorAll(".payment-option").forEach(function (label) {
-                const input = label.querySelector("input");
-                label.classList.toggle("selected", input.checked);
+        /* ── Payment option highlight ── */
+        function syncPaymentUI() {
+            document.querySelectorAll(".payment-option").forEach(function(lbl) {
+                lbl.classList.toggle("selected", lbl.querySelector("input").checked);
             });
         }
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(function(r) {
+            r.addEventListener("change", syncPaymentUI);
+        });
 
+        /* ── Render cart from cookie ── */
         function renderCart() {
-            const cart = store.getCart();
-            const subtotal = cart.reduce(function (total, item) {
-                return total + store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity));
+            var cart     = store.getCart();
+            var subtotal = cart.reduce(function(s, item) {
+                return s + store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity));
             }, 0);
-            const total = subtotal + deliveryFee;
+            var total = subtotal + DELIVERY;
 
             if (!cart.length) {
-                cartContainer.innerHTML = [
-                    '<div class="empty-cart-message">',
-                    "<p>Your cart is empty.</p>",
-                    '<a class="btn-primary" href="${pageContext.request.contextPath}/products">View Menu</a>',
-                    "</div>"
-                ].join("");
-                summaryContainer.innerHTML = '<p class="summary-empty">No saved drinks yet.</p>';
-                document.getElementById("confirmOrderBtn").disabled = true;
+                cartContainer.innerHTML =
+                    '<div class="empty-cart-message">' +
+                    '<p>Your cart is empty.</p>' +
+                    '<a class="btn-primary" href="${pageContext.request.contextPath}/products">View Menu</a>' +
+                    '</div>';
+                summaryContainer.innerHTML = '<p class="summary-empty">No items yet.</p>';
+                confirmBtn.disabled = true;
             } else {
-                cartContainer.innerHTML = cart.map(function (item, index) {
-                    const lineTotal = store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity));
-                    const optionTags = [
-                        item.size,
-                        item.flavour,
-                        item.topping,
-                        item.iceLevel,
-                        item.sugarLevel
-                    ].filter(Boolean).map(function (tag) {
-                        return "<span>" + escapeHtml(tag) + "</span>";
-                    }).join("");
-
+                cartContainer.innerHTML = cart.map(function(item, idx) {
+                    var lineTotal = store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity));
+                    var tags = [item.size, item.flavour, item.topping, item.iceLevel, item.sugarLevel]
+                        .filter(Boolean)
+                        .map(function(t){ return "<span>" + esc(t) + "</span>"; }).join("");
                     return [
                         '<article class="cart-item">',
-                        '<div class="item-image"><img src="' + escapeHtml(item.imageUrl || "") + '" alt="' + escapeHtml(item.name || "Drink") + '"></div>',
-                        '<div class="item-details">',
-                        '<h3 class="item-name">' + escapeHtml(item.name || "Drink") + "</h3>",
-                        '<p class="item-description">' + escapeHtml(item.description || "Saved from the product detail page.") + "</p>",
-                        '<div class="item-tags">' + optionTags + "</div>",
-                        '<p class="item-price">Unit Price: ' + store.formatCurrency(item.unitPrice) + "</p>",
-                        "</div>",
-                        '<div class="item-actions">',
-                        '<div class="quantity-control">',
-                        '<button type="button" onclick="window.changeCartQuantity(' + index + ', -1)">-</button>',
-                        '<input type="text" value="' + Math.max(1, store.toNumber(item.quantity)) + '" readonly>',
-                        '<button type="button" onclick="window.changeCartQuantity(' + index + ', 1)">+</button>',
-                        "</div>",
-                        '<strong class="item-price">' + store.formatCurrency(lineTotal) + "</strong>",
-                        '<button class="remove-btn" type="button" onclick="window.removeCartItem(' + index + ')">Remove</button>',
-                        "</div>",
-                        "</article>"
+                          '<div class="item-image"><img src="' + esc(item.imageUrl||"") + '" alt="' + esc(item.name||"Drink") + '"></div>',
+                          '<div class="item-details">',
+                            '<h3 class="item-name">' + esc(item.name||"Drink") + '</h3>',
+                            '<p class="item-description">' + esc(item.description||"") + '</p>',
+                            '<div class="item-tags">' + tags + '</div>',
+                            '<p class="item-price">Unit: ' + store.formatCurrency(item.unitPrice) + '</p>',
+                          '</div>',
+                          '<div class="item-actions">',
+                            '<div class="quantity-control">',
+                              '<button type="button" onclick="window._cartQty(' + idx + ',-1)">-</button>',
+                              '<input type="text" value="' + Math.max(1,store.toNumber(item.quantity)) + '" readonly>',
+                              '<button type="button" onclick="window._cartQty(' + idx + ',1)">+</button>',
+                            '</div>',
+                            '<strong class="item-price">' + store.formatCurrency(lineTotal) + '</strong>',
+                            '<button class="remove-btn" type="button" onclick="window._cartRemove(' + idx + ')">Remove</button>',
+                          '</div>',
+                        '</article>'
                     ].join("");
                 }).join("");
 
-                summaryContainer.innerHTML = cart.map(function (item) {
+                summaryContainer.innerHTML = cart.map(function(item) {
+                    var lineTotal = store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity));
                     return [
                         '<div class="summary-item">',
-                        "<div>",
-                        "<strong>" + escapeHtml(item.name || "Drink") + "</strong>",
-                        "<small>" + escapeHtml(item.optionsSummary || "Custom selection") + " • Qty " + Math.max(1, store.toNumber(item.quantity)) + "</small>",
-                        "</div>",
-                        "<span>" + store.formatCurrency(store.toNumber(item.unitPrice) * Math.max(1, store.toNumber(item.quantity))) + "</span>",
-                        "</div>"
+                          '<div><strong>' + esc(item.name||"Drink") + '</strong>',
+                          '<small>' + esc(item.optionsSummary||"Custom") + ' &bull; Qty ' + Math.max(1,store.toNumber(item.quantity)) + '</small></div>',
+                          '<span>' + store.formatCurrency(lineTotal) + '</span>',
+                        '</div>'
                     ].join("");
                 }).join("");
 
-                document.getElementById("confirmOrderBtn").disabled = false;
+                confirmBtn.disabled = false;
             }
 
-            document.getElementById("subtotal").textContent = store.formatCurrency(subtotal);
-            document.getElementById("total").textContent = store.formatCurrency(total);
+            document.getElementById("subtotal").textContent     = store.formatCurrency(subtotal);
+            document.getElementById("total").textContent        = store.formatCurrency(total);
             document.getElementById("checkoutTotalAmount").value = total.toFixed(2);
         }
 
-        window.changeCartQuantity = function (index, delta) {
-            const cart = store.getCart();
-            if (!cart[index]) {
-                return;
-            }
-            const currentQuantity = Math.max(1, store.toNumber(cart[index].quantity));
-            const nextQuantity = Math.max(1, currentQuantity + delta);
-            cart[index].quantity = nextQuantity;
-            cart[index].totalPrice = store.toNumber(cart[index].unitPrice) * nextQuantity;
+        /* ── Quantity / remove ── */
+        window._cartQty = function(idx, delta) {
+            var cart = store.getCart();
+            if (!cart[idx]) return;
+            cart[idx].quantity   = Math.max(1, store.toNumber(cart[idx].quantity) + delta);
+            cart[idx].totalPrice = store.toNumber(cart[idx].unitPrice) * cart[idx].quantity;
+            store.saveCart(cart);
+            renderCart();
+        };
+        window._cartRemove = function(idx) {
+            var cart = store.getCart();
+            cart.splice(idx, 1);
             store.saveCart(cart);
             renderCart();
         };
 
-        window.removeCartItem = function (index) {
-            const cart = store.getCart();
-            cart.splice(index, 1);
-            store.saveCart(cart);
-            renderCart();
-        };
-
-        document.querySelectorAll('input[name="paymentMethod"]').forEach(function (input) {
-            input.addEventListener("change", updatePaymentState);
-        });
-
-        document.getElementById("confirmOrderBtn").addEventListener("click", function () {
-            const cart = store.getCart();
-            if (!cart.length) {
-                showStatus("Add at least one drink before confirming the order.");
-                return;
-            }
-
-            const shipping = {
-                fullName: document.getElementById("shippingFullName").value.trim(),
-                email: document.getElementById("shippingEmail").value.trim(),
-                phone: document.getElementById("shippingPhone").value.trim(),
-                city: document.getElementById("shippingCity").value.trim(),
+        /* ── Build shipping object ── */
+        function buildShipping() {
+            return {
+                fullName:   document.getElementById("shippingFullName").value.trim(),
+                email:      document.getElementById("shippingEmail").value.trim(),
+                phone:      document.getElementById("shippingPhone").value.trim(),
+                city:       document.getElementById("shippingCity").value.trim(),
                 postalCode: document.getElementById("shippingPostalCode").value.trim(),
-                address: document.getElementById("shippingAddress").value.trim(),
-                notes: document.getElementById("shippingNotes").value.trim()
+                address:    document.getElementById("shippingAddress").value.trim(),
+                notes:      document.getElementById("shippingNotes").value.trim()
             };
+        }
 
-            if (!shipping.fullName || !shipping.phone || !shipping.address) {
-                showStatus("Full name, phone number, and delivery address are required.");
-                return;
-            }
+        /* ── Validate ── */
+        function validateForm(s) {
+            if (!s.fullName) { showError("Full name is required."); return false; }
+            if (!s.phone)    { showError("Phone number is required."); return false; }
+            if (!s.address)  { showError("Delivery address is required."); return false; }
+            return true;
+        }
 
-            const paymentInput = document.querySelector('input[name="paymentMethod"]:checked');
-            const payment = {
-                method: paymentInput.value,
-                label: paymentInput.value === "online" ? "Online Payment (Fonepay/Khalti)" : "Cash on Delivery"
-            };
+        /* ── Submit hidden form to CartServlet (POST /cart) ── */
+        function submitOrder(method, label, extra) {
+            var cart     = store.getCart();
+            var shipping = buildShipping();
+            var total    = store.toNumber(document.getElementById("checkoutTotalAmount").value);
 
-            document.getElementById("checkoutItems").value = JSON.stringify(cart);
-            document.getElementById("checkoutPayment").value = JSON.stringify(payment);
+            var payment = Object.assign({
+                method: method,
+                label:  label,
+                status: method === "cod" ? "pending" : "paid",
+                amount: total,
+                date:   new Date().toISOString()
+            }, extra || {});
+
+            document.getElementById("checkoutItems").value           = JSON.stringify(cart);
+            document.getElementById("checkoutPayment").value         = JSON.stringify(payment);
             document.getElementById("checkoutShippingAddress").value = JSON.stringify(shipping);
             document.getElementById("checkoutForm").submit();
+        }
+
+        /* ── COD Modal open / close ── */
+        function openCodModal() {
+            codModal.classList.add("open");
+            codOverlay.classList.add("open");
+            document.body.style.overflow = "hidden";
+            setTimeout(function(){ document.getElementById("codConfirmName").focus(); }, 80);
+        }
+        function closeCodModal() {
+            codModal.classList.remove("open");
+            codOverlay.classList.remove("open");
+            document.body.style.overflow = "";
+        }
+        document.getElementById("codCancelBtn").addEventListener("click", closeCodModal);
+        codOverlay.addEventListener("click", closeCodModal);
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") closeCodModal();
         });
 
-        updatePaymentState();
+        /* ── COD confirm inside modal ── */
+        document.getElementById("codSubmitBtn").addEventListener("click", function() {
+            var name  = document.getElementById("codConfirmName").value.trim();
+            var phone = document.getElementById("codConfirmPhone").value.trim();
+            var err   = document.getElementById("codModalError");
+            if (!name || !phone) {
+                err.textContent = "Please enter your name and phone number to confirm.";
+                err.style.display = "block";
+                return;
+            }
+            err.style.display = "none";
+            closeCodModal();
+            submitOrder("cod", "Cash on Delivery", {
+                confirmName:    name,
+                confirmPhone:   phone,
+                transaction_id: "COD-" + Date.now()
+            });
+        });
+
+        /* ── Main Confirm Order button ── */
+        confirmBtn.addEventListener("click", function() {
+            var cart     = store.getCart();
+            var shipping = buildShipping();
+            if (!cart.length)          { showError("Add at least one drink before confirming."); return; }
+            if (!validateForm(shipping)) return;
+
+            var method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            if (method === "cod") {
+                /* Pre-fill modal with shipping details */
+                document.getElementById("codConfirmName").value  = shipping.fullName || "";
+                document.getElementById("codConfirmPhone").value = shipping.phone    || "";
+                document.getElementById("codModalError").style.display = "none";
+                openCodModal();
+            } else {
+                /* Online payment — submit directly */
+                submitOrder("online", "Online Payment (Fonepay/Khalti)", {
+                    transaction_id: "ONL-" + Date.now(),
+                    status: "paid"
+                });
+            }
+        });
+
+        /* ── Init ── */
+        syncPaymentUI();
         renderCart();
     })();
 </script>

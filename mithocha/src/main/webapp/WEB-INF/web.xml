@@ -7,74 +7,15 @@
 
   <display-name>MithoCha Web Application</display-name>
 
-  <!-- ===== USER SERVLETS ===== -->
-  <servlet>
-    <servlet-name>AuthServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.AuthServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>ProductServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.ProductServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>CartServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.CartServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>OrderServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.OrderServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>ProfileServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.ProfileServlet</servlet-class>
-  </servlet>
-
-  <!-- Dashboard still served directly from JSP (read-only home page) -->
+  <!-- Dashboard served as JSP -->
   <servlet>
     <servlet-name>dashboard</servlet-name>
     <jsp-file>/WEB-INF/views/user/home.jsp</jsp-file>
   </servlet>
 
-  <!-- ===== ADMIN SERVLET (handles all /admin/* routes) ===== -->
-  <servlet>
-    <servlet-name>AdminServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.AdminServlet</servlet-class>
-  </servlet>
-
-  <!-- ===== CONTACT / ABOUT SERVLET ===== -->
-  <servlet>
-    <servlet-name>ContactServlet</servlet-name>
-    <servlet-class>com.mithocha.servlet.ContactServlet</servlet-class>
-  </servlet>
-
-
-  <!-- ===== USER MAPPINGS ===== -->
-  <!-- Mappings handled by @WebServlet annotations in servlet classes -->
-  
   <servlet-mapping>
     <servlet-name>dashboard</servlet-name>
     <url-pattern>/dashboard</url-pattern>
-  </servlet-mapping>
-
-  <!-- ===== ADMIN MAPPINGS ===== -->
-  <servlet-mapping>
-    <servlet-name>AdminServlet</servlet-name>
-    <url-pattern>/admin/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- ===== CONTACT / ABOUT MAPPINGS ===== -->
-  <servlet-mapping>
-    <servlet-name>ContactServlet</servlet-name>
-    <url-pattern>/contact</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>ContactServlet</servlet-name>
-    <url-pattern>/about</url-pattern>
   </servlet-mapping>
   <!-- ===== WELCOME PAGE ===== -->
   <welcome-file-list>

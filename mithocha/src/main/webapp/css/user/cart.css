@@ -1704,3 +1704,194 @@ body {
     align-items: flex-start;
   }
 }
+
+/* ============================================================
+   COD CONFIRMATION MODAL
+   ============================================================ */
+
+/* Backdrop */
+.cod-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(39, 24, 20, 0.52);
+  z-index: 1100;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fadeIn 0.22s ease;
+}
+.cod-overlay.open { display: block; }
+
+/* Modal panel */
+.cod-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -48%) scale(0.96);
+  z-index: 1200;
+  width: min(480px, calc(100vw - 32px));
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(39, 24, 20, 0.22);
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease;
+  opacity: 0;
+}
+.cod-modal.open {
+  display: block;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Header */
+.cod-modal-header {
+  background: linear-gradient(135deg, #4b2c20 0%, #7d562d 100%);
+  padding: 28px 28px 22px;
+  color: #fff8f6;
+  text-align: center;
+}
+.cod-modal-icon {
+  font-size: 40px;
+  color: #ffdcbd;
+  display: block;
+  margin-bottom: 10px;
+}
+.cod-modal-header h2 {
+  font-family: 'Noto Serif', serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #fff8f6;
+}
+.cod-modal-header p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 233, 228, 0.85);
+}
+
+/* Body */
+.cod-modal-body {
+  padding: 24px 28px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cod-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(240, 189, 139, 0.15);
+  border: 1px solid rgba(240, 189, 139, 0.4);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #7d562d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cod-info-row .material-symbols-outlined {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.cod-info-row p { margin: 0; }
+
+.cod-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.cod-field label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--on-surface-variant);
+}
+.cod-field input {
+  width: 100%;
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  background: var(--surface-container-low);
+  padding: 13px 16px;
+  font-size: 15px;
+  color: var(--on-surface);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cod-field input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(125, 86, 45, 0.12);
+}
+
+.cod-error {
+  color: #9c1515;
+  background: rgba(186, 26, 26, 0.08);
+  border: 1px solid rgba(186, 26, 26, 0.18);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Footer */
+.cod-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 28px 26px;
+}
+.cod-btn-cancel {
+  flex: 1;
+  padding: 13px 18px;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+.cod-btn-cancel:hover {
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+}
+.cod-btn-confirm {
+  flex: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--secondary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 12px 24px rgba(125, 86, 45, 0.22);
+  transition: filter 0.2s, transform 0.15s;
+}
+.cod-btn-confirm:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.cod-btn-confirm .material-symbols-outlined { font-size: 18px; }
+
+/* Fade-in keyframe */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Message banner success state */
+.message-banner.success {
+  background: rgba(47, 125, 50, 0.1);
+  color: #246328;
+  border: 1px solid rgba(47, 125, 50, 0.2);
+}
