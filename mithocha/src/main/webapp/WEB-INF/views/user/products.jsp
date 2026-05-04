@@ -1,12 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.List,java.net.URLEncoder,com.mithocha.model.Product,com.mithocha.model.User,com.mithocha.util.SessionUtil,com.mithocha.util.ValidationUtil" %>
-<%
-    List<Product> products = (List<Product>) request.getAttribute("products");
-    List<String> categories = (List<String>) request.getAttribute("categories");
-    String selectedCategory = (String) request.getAttribute("selectedCategory");
-    String contextPath = request.getContextPath();
-    String placeholderImage = "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=1200&q=80";
-    User loggedInUser = SessionUtil.getUser(request);
-%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +23,7 @@
         </nav>
         <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
             <span class="material-symbols-outlined">shopping_cart</span>
-            <span class="cart-count">0</span>
+            <span class="cart-count" id="cartCount">0</span>
         </a>
     </div>
 </header>
@@ -39,76 +31,244 @@
 <main class="products-main">
     <header class="page-hero container">
         <p class="eyebrow">MithoCha Menu</p>
-        <h1 class="page-title">Freshly Brewed From Your Database</h1>
-        <p class="page-copy">Every product card below is rendered from the `product` table, so updates in your `mithocha` database now show up directly in the storefront.</p>
+        <h1 class="page-title">Mitho Bubble Tea</h1>
+        <p class="page-copy">Delight in every sip. Our authentic bubble teas are crafted with premium tea leaves, fresh milk, and the perfect chewy pearls.</p>
     </header>
 
     <section class="container product-section">
-        <div class="category-bar">
-            <a class="category-pill <%= selectedCategory == null || selectedCategory.trim().isEmpty() ? "active" : "" %>" href="<%= contextPath %>/products">All Drinks</a>
-            <% if (categories != null) {
-                   for (String category : categories) {
-                       if (ValidationUtil.isNullOrEmpty(category)) {
-                           continue;
-                       }
-            %>
-                <a class="category-pill <%= category.equalsIgnoreCase(selectedCategory == null ? "" : selectedCategory) ? "active" : "" %>"
-                   href="<%= contextPath %>/products?category=<%= URLEncoder.encode(category, "UTF-8") %>"><%= ValidationUtil.sanitise(category) %></a>
-            <%     }
-               } %>
+
+        <div class="product-grid">
+            <article class="product-card featured">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZrGNHM-JSrZ_-EjQi0OE19cCc7gMWzcDxsbuq4KfoTE7CtfKH5v9F2rLZXPMtAlkDMkFtxfZICYUWw_eIZ6LfISL9yvx2lNmx3olN6xdIeoH7K3Ee_K5Tz3yjZ432htCEc0WCNTCzV6LUYOFfsEs_J9k4X5j8M3lhBvZO4l85-hcR2R7Xx_rJUWQby4784tXie9wCktgeXSgu6aYRS8vPAfYlZ_R_7ZsDB-By-QVoD3UfnsEtSOQIv-6WTnDHaQs7WFJ_snolrQ2" alt="caramel colored bubble tea with syrup swirls">
+                    <span class="badge">Bestseller</span>
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Gud-Caramel Butterscotch</h3>
+                        <span class="price">Rs. 350</span>
+                    </div>
+                    <p class="product-copy">A rich, jaggery-infused butterscotch blend that captures the warmth of traditional Nepali sweetness.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Gurmuri</span>
+                        <span class="mini-tag">Caramelized</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+                        <button class="icon-action" type="button" aria-label="Product settings">
+                            <span class="material-symbols-outlined">settings</span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBquX2fNKHlLm4aGMoIl5OqewCbVzo7BJDy19gbdy2Ln-en1dklix1Ih2kfAWeSbVhSA6J_kn1hsGEEVw_qFl-QZNN0Md4DwIX9Sx4zMNkHrFeitnutGAQTMJxW9TJl9Xc3P3rbm_qCkVI3J_gEqG5q-3X0UqobxtPHei962zde8ElnRyawz1spQALNeqLOawkrAc-OE6MXjTfddoh10SokxQ-b6IGsvZbc3m6KWNQZ4a1Qjcq6S-AiOg3l60fMoE-oMv13HFSMPIdo" alt="rich dark chocolate bubble tea">
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Dark Chocolate</h3>
+                        <span class="price">Rs. 380</span>
+                    </div>
+                    <p class="product-copy">Deep cocoa layers met with fresh Himalayan milk for an intense, velvety chocolate escape.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Bold</span>
+                        <span class="mini-tag">Indulgent</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsV8N6lfd0nZJ_tE4Kk3Wvf-qo4Qw5eiRl6-t3zusw0K-IHaZGd5WJjtk6-nVxVQl43jhFQSILOzm4BMSO2x-kKoVpgVG3Z2gHN3TGpSW6vFIiZL2D8zWkT0mYWGDAxYyaNKsk3rZSZ5HH3eiFwXTaA7zhhH_3enTRWDhFQ83FiW_yG9FDPrN6F0KdLcDqoLQusQa25hajZ8f3b80lBQr1WHydmT8yT0LDGRD5N0bwXlW0D10GwifLqhh1dp6XRxK-FHziYTr4OusY" alt="creamy white vanilla bubble tea">
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Pure Vanilla</h3>
+                        <span class="price">Rs. 320</span>
+                    </div>
+                    <p class="product-copy">Classic, pure, and elegant. A serene vanilla blend that tastes like snow-capped mountain mornings.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Pure</span>
+                        <span class="mini-tag">Smooth</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="container product-section">
+        <div class="section-heading">
+            <h2>Fruit Teas</h2>
         </div>
 
-        <% if (products == null || products.isEmpty()) { %>
-            <section class="empty-state">
-                <span class="material-symbols-outlined">local_cafe</span>
-                <h2>No drinks matched this view yet</h2>
-                <p>Add rows to the `product` table in `mithocha`, or clear the current category filter to see the full menu.</p>
-                <a class="primary-action empty-action" href="<%= contextPath %>/products">Show Full Menu</a>
-            </section>
-        <% } else { %>
-            <div class="product-grid">
-                <% for (Product product : products) {
-                       String imageUrl = ValidationUtil.isNullOrEmpty(product.getImageUrl()) ? placeholderImage : product.getImageUrl();
-                       String category = ValidationUtil.isNullOrEmpty(product.getCategory()) ? "Signature" : product.getCategory();
-                       String price = product.getBasePrice() == null ? "0" : product.getBasePrice().stripTrailingZeros().toPlainString();
-                %>
-                    <article class="product-card">
-                        <div class="product-media">
-                            <img src="<%= ValidationUtil.sanitise(imageUrl) %>" alt="<%= ValidationUtil.sanitise(product.getName()) %>">
-                            <span class="badge"><%= ValidationUtil.sanitise(category) %></span>
-                        </div>
-                        <div class="product-body product-card-body"
-                             data-product-id="<%= product.getProductId() %>"
-                             data-product-name="<%= ValidationUtil.sanitise(product.getName()) %>"
-                             data-product-image="<%= ValidationUtil.sanitise(imageUrl) %>"
-                             data-product-description="<%= ValidationUtil.sanitise(product.getDescription()) %>"
-                             data-product-category="<%= ValidationUtil.sanitise(category) %>"
-                             data-product-base-price="<%= price %>"
-                             data-product-sizes="<%= ValidationUtil.sanitise(product.getSizes() == null ? "" : product.getSizes()) %>"
-                             data-product-flavours="<%= ValidationUtil.sanitise(product.getFlavours() == null ? "" : product.getFlavours()) %>"
-                             data-product-toppings="<%= ValidationUtil.sanitise(product.getToppings() == null ? "" : product.getToppings()) %>">
-                            <div class="product-title-row">
-                                <h3><%= ValidationUtil.sanitise(product.getName()) %></h3>
-                                <span class="price">Rs. <%= price %></span>
-                            </div>
-                            <p class="product-copy"><%= ValidationUtil.sanitise(product.getDescription()) %></p>
-                            <div class="tag-row">
-                                <span class="mini-tag"><%= ValidationUtil.sanitise(category) %></span>
-                                <% if (!ValidationUtil.isNullOrEmpty(product.getSizes()) || !ValidationUtil.isNullOrEmpty(product.getFlavours()) || !ValidationUtil.isNullOrEmpty(product.getToppings())) { %>
-                                    <span class="mini-tag">Customizable</span>
-                                <% } %>
-                            </div>
-                            <div class="card-actions">
-                                <button class="primary-action quick-cart-button" type="button"><%= loggedInUser != null ? "Add to Cart" : "Save to Cart" %></button>
-                                <a class="primary-action product-link" href="<%= contextPath %>/product-detail?id=<%= product.getProductId() %>">Customize Order</a>
-                            </div>
-                        </div>
-                    </article>
-                <% } %>
-            </div>
-        <% } %>
+        <div class="product-grid">
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjKtMt-cGyRjuS3wBgvv9GGeZQg18oha7X_8eOHFae6vCPJjeh4fB4ROD2lOhGwSkucYk1HDc5wzBhWDNTltTAvFEwxzzcgDS2mjjKISVl-PxnnYJ4AWwgda-04CNuoaKlSKo2IcvmJAS5HM0Pex-vVwp-ndfz3B5N4Ay04jVEn5i6oMVl7BCP-2D9g5IHXFqULub4i1JTnch08XXber5QQW6jsuiS2bDB5nQYyf_V6DgU3QuG3Am0u_X52iO654WXwJvE8peSm2zT" alt="vibrant pink strawberry bubble tea">
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Red Strawberry</h3>
+                        <span class="price">Rs. 400</span>
+                    </div>
+                    <p class="product-copy">Sun-ripened strawberries blended into a refreshing tea for a burst of crimson joy.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Tangy</span>
+                        <span class="mini-tag">Sweet</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7SeL4pRya8ife9IlLFFFzp9eD8AKIRoGGdxwNkOMaoW--dspOvTfCkvayr-23Ryms2nP8ykipJi6ULdxemCNZyHYjDQZHsF6yYhWzh3FEUpZrsU4rHvlA4Ok_mBKxdhbBqFEm5jYMzZABmDgftj32j8XwXeGwblK6TpzjhnqrSWKg1vsoPLCqNalW7e7dMAjyWljLeLkQxgCbYO8kqlZfYDYQ5q8Tly8HZ1wULU_MRUan53-GItmlutxTet4jSi3vHsidL3GQB_X_" alt="deep purple blueberry bubble tea">
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Blueberry Bliss</h3>
+                        <span class="price">Rs. 420</span>
+                    </div>
+                    <p class="product-copy">A magical purple-blue infusion of forest blueberries and premium jasmine green tea.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Tart</span>
+                        <span class="mini-tag">Antioxidant</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9P67L4BG5zx620CFzS9qoNhi4iANNoYSMgOnXr_k8TOZaNieM5f2Q-lNaKT4uIZzVia82UUNhrFS5DYycYNQSZ7UHRRVyle90pOkV_OT0cVQWaj1BXjCpU7LygfqhWAO-LLuF7IlpXySpt6nSh9KR6eU-KrboT0MSO7_4lS7d7xZ6BcFS6v6sdijpKt_Pyq1G0tuqkbPqYRgkvd3fznL6m5HatqWkyu0tiGw-HgZFEEqGqjpZ2DKUC-0O8xgGGY3ERFMztGFZUlhj" alt="soft green honeydew bubble tea">
+                </div>
+                <div class="product-body">
+                    <div class="product-title-row">
+                        <h3>Honey Dew</h3>
+                        <span class="price">Rs. 390</span>
+                    </div>
+                    <p class="product-copy">Refreshing light green melon essence that cools the soul like a breeze from the valley.</p>
+                    <div class="tag-row">
+                        <span class="mini-tag">Cooling</span>
+                        <span class="mini-tag">Refreshing</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="primary-action" type="button">Order</button>
+                    </div>
+                </div>
+            </article>
+        </div>
     </section>
 </main>
+
+<div class="order-modal" id="productDetailModal" aria-hidden="true">
+    <div class="order-backdrop" data-close-detail></div>
+    <section class="order-sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <button class="order-close" type="button" aria-label="Close product details" data-close-detail>
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="order-builder">
+            <div class="order-config">
+                <button class="back-button" type="button" data-close-detail>
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Back to Menu
+                </button>
+                <div class="order-product-heading">
+                    <img id="detailImage" src="" alt="">
+                    <div>
+                        <h2 id="detailTitle">Bubble Tea</h2>
+                        <p id="detailDescription">Customize your drink before adding it to cart.</p>
+                        <div class="order-tags">
+                            <span>Freshly Brewed</span>
+                            <span>Handcrafted Pearls</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <h3>Cup Size</h3>
+                    <div class="size-grid">
+                        <label class="option-card selected">
+                            <input type="radio" name="detailCupSize" value="Regular" data-extra="0" checked>
+                            <span class="material-symbols-outlined">local_cafe</span>
+                            <strong>Regular</strong>
+                            <small>500ml</small>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="detailCupSize" value="Large" data-extra="150">
+                            <span class="material-symbols-outlined">local_cafe</span>
+                            <strong>Large</strong>
+                            <small>+ Rs. 150</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <h3>Ice Level</h3>
+                    <div class="pill-options" id="detailIceOptions">
+                        <button type="button" data-value="No Ice">No Ice</button>
+                        <button type="button" data-value="Less Ice">Less Ice</button>
+                        <button class="selected" type="button" data-value="Regular Ice">Regular</button>
+                        <button type="button" data-value="Extra Ice">Extra Ice</button>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <h3>Sugar Level</h3>
+                    <input class="sugar-range" id="detailSugarRange" type="range" min="0" max="100" step="25" value="50">
+                    <div class="range-labels">
+                        <span>No Sugar</span>
+                        <span>Low (25%)</span>
+                        <span>Medium (50%)</span>
+                        <span>Sweet (75%)</span>
+                        <span>Full Sugar</span>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <h3>Quantity</h3>
+                    <div class="detail-quantity">
+                        <button type="button" id="detailQtyMinus">-</button>
+                        <input id="detailQuantity" type="text" value="1" readonly>
+                        <button type="button" id="detailQtyPlus">+</button>
+                    </div>
+                </div>
+            </div>
+            <aside class="order-summary">
+                <h2>Product Details</h2>
+                <div class="summary-product">
+                    <div>
+                        <strong id="detailSummaryName">Bubble Tea</strong>
+                        <p id="detailSummaryOptions">Regular • Medium (50%) Sugar • Regular Ice</p>
+                    </div>
+                    <span id="detailSummaryPrice">Rs. 0</span>
+                </div>
+                <div class="summary-line">
+                    <span>Base Price</span>
+                    <strong id="detailBasePrice">Rs. 0</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Size Add-on</span>
+                    <strong id="detailSizeExtra">Rs. 0</strong>
+                </div>
+                <div class="summary-total">
+                    <span>Item Total</span>
+                    <strong id="detailItemTotal">Rs. 0</strong>
+                </div>
+                <button class="confirm-order" type="button" id="detailAddToCart">Add to Cart</button>
+            </aside>
+        </div>
+    </section>
+</div>
 
 <footer class="footer">
     <div class="footer-container">
@@ -148,60 +308,7 @@
     </div>
 </footer>
 
-<script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
-<script>
-    (function () {
-        const store = window.MithoChaStorefront;
-        const fallbackSizes = [
-            { label: "Regular", extra: 0, meta: "500ml" }
-        ];
 
-        document.querySelectorAll(".quick-cart-button").forEach(function (button) {
-            button.addEventListener("click", function () {
-                const card = button.closest(".product-card-body");
-                const sizes = store.parseProductOptions(card.dataset.productSizes, fallbackSizes);
-                const flavours = store.parseProductOptions(card.dataset.productFlavours, []);
-                const toppings = store.parseProductOptions(card.dataset.productToppings, []);
 
-                const size = sizes[0] || fallbackSizes[0];
-                const flavour = flavours[0] || null;
-                const topping = toppings[0] || null;
-                const addOnTotal = (size ? size.extra : 0)
-                    + (flavour ? flavour.extra : 0)
-                    + (topping ? topping.extra : 0);
-                const unitPrice = store.toNumber(card.dataset.productBasePrice) + addOnTotal;
-                const optionsSummary = [
-                    size ? size.label : "Regular",
-                    flavour ? flavour.label : null,
-                    topping ? topping.label : null,
-                    "50% Sugar",
-                    "Regular Ice"
-                ].filter(Boolean).join(" • ");
-
-                store.addCartItem({
-                    productId: store.toNumber(card.dataset.productId),
-                    name: card.dataset.productName,
-                    imageUrl: card.dataset.productImage,
-                    description: card.dataset.productDescription,
-                    category: card.dataset.productCategory,
-                    basePrice: store.toNumber(card.dataset.productBasePrice),
-                    unitPrice: unitPrice,
-                    quantity: 1,
-                    size: size ? size.label : "",
-                    flavour: flavour ? flavour.label : "",
-                    topping: topping ? topping.label : "",
-                    iceLevel: "Regular Ice",
-                    sugarLevel: "50%",
-                    optionsSummary: optionsSummary
-                });
-
-                button.textContent = "Added";
-                window.setTimeout(function () {
-                    button.textContent = "<%= loggedInUser != null ? "Add to Cart" : "Save to Cart" %>";
-                }, 1400);
-            });
-        });
-    })();
-</script>
 </body>
 </html>
