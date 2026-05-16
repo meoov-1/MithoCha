@@ -28,7 +28,7 @@
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a class="active" href="${pageContext.request.contextPath}/products">Menu</a>
             <a href="${pageContext.request.contextPath}/blog">Blog</a>
-            <a href="${pageContext.request.contextPath}/about">About</a>
+            <a href="${pageContext.request.contextPath}/contact">Contact</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -45,76 +45,108 @@
 </header>
 
 <main class="products-main">
+
+    <%-- ── Page Hero ── --%>
     <header class="page-hero container">
         <p class="eyebrow">MithoCha Menu</p>
-        <h1 class="page-title">Freshly Brewed From Your Database</h1>
-        <p class="page-copy">Every product card below is rendered from the `product` table, so updates in your `mithocha` database now show up directly in the storefront.</p>
+        <h1 class="page-title">Our Bubble Tea Collection</h1>
+        <p class="page-copy">Handcrafted daily with premium Ilam tea leaves, fresh milk, and house-made syrups. Every cup made to order.</p>
     </header>
 
     <section class="container product-section">
+
+        <%-- ── Category filter ── --%>
+        <% if (categories != null && !categories.isEmpty()) { %>
         <div class="category-bar">
-            <a class="category-pill <%= selectedCategory == null || selectedCategory.trim().isEmpty() ? "active" : "" %>" href="<%= contextPath %>/products">All Drinks</a>
-            <% if (categories != null) {
-                   for (String category : categories) {
-                       if (ValidationUtil.isNullOrEmpty(category)) {
-                           continue;
-                       }
-            %>
+            <a class="category-pill <%= selectedCategory == null || selectedCategory.trim().isEmpty() ? "active" : "" %>"
+               href="<%= contextPath %>/products">All</a>
+            <% for (String category : categories) {
+                   if (ValidationUtil.isNullOrEmpty(category)) continue; %>
                 <a class="category-pill <%= category.equalsIgnoreCase(selectedCategory == null ? "" : selectedCategory) ? "active" : "" %>"
-                   href="<%= contextPath %>/products?category=<%= URLEncoder.encode(category, "UTF-8") %>"><%= ValidationUtil.sanitise(category) %></a>
-            <%     }
-               } %>
+                   href="<%= contextPath %>/products?category=<%= URLEncoder.encode(category, "UTF-8") %>">
+                   <%= ValidationUtil.sanitise(category) %>
+                </a>
+            <% } %>
         </div>
+        <% } %>
+
+        <%-- ── Product count ── --%>
+        <% if (products != null && !products.isEmpty()) { %>
+        <p class="results-count">
+            <span><%= products.size() %> drink<%= products.size() != 1 ? "s" : "" %></span>
+            <% if (selectedCategory != null && !selectedCategory.trim().isEmpty()) { %>
+                in <strong><%= ValidationUtil.sanitise(selectedCategory) %></strong>
+            <% } %>
+        </p>
+        <% } %>
 
         <% if (products == null || products.isEmpty()) { %>
             <section class="empty-state">
                 <span class="material-symbols-outlined">local_cafe</span>
-                <h2>No drinks matched this view yet</h2>
-                <p>Add rows to the `product` table in `mithocha`, or clear the current category filter to see the full menu.</p>
-                <a class="primary-action empty-action" href="<%= contextPath %>/products">Show Full Menu</a>
+                <h2>No drinks here yet</h2>
+                <p>Add products via the admin panel and they'll appear here instantly.</p>
+                <a class="primary-action empty-action" href="<%= contextPath %>/products">Show All</a>
             </section>
+
         <% } else { %>
             <div class="product-grid">
                 <% for (Product product : products) {
                        String imageUrl = ValidationUtil.isNullOrEmpty(product.getImageUrl()) ? placeholderImage : product.getImageUrl();
                        String category = ValidationUtil.isNullOrEmpty(product.getCategory()) ? "Signature" : product.getCategory();
-                       String price = product.getBasePrice() == null ? "0" : product.getBasePrice().stripTrailingZeros().toPlainString();
+                       String price    = product.getBasePrice() == null ? "0" : product.getBasePrice().stripTrailingZeros().toPlainString();
+                       String desc     = ValidationUtil.isNullOrEmpty(product.getDescription()) ? "" : product.getDescription();
                 %>
                     <article class="product-card">
+                        <%-- Large image --%>
                         <div class="product-media">
-                            <img src="<%= ValidationUtil.sanitise(imageUrl) %>" alt="<%= ValidationUtil.sanitise(product.getName()) %>">
-                            <span class="badge"><%= ValidationUtil.sanitise(category) %></span>
+                            <img src="<%= ValidationUtil.sanitise(imageUrl) %>"
+                                 alt="<%= ValidationUtil.sanitise(product.getName()) %>"
+                                 loading="lazy">
                         </div>
+
+                        <%-- Card body --%>
                         <div class="product-body product-card-body"
                              data-product-id="<%= product.getProductId() %>"
                              data-product-name="<%= ValidationUtil.sanitise(product.getName()) %>"
                              data-product-image="<%= ValidationUtil.sanitise(imageUrl) %>"
-                             data-product-description="<%= ValidationUtil.sanitise(product.getDescription()) %>"
+                             data-product-description="<%= ValidationUtil.sanitise(desc) %>"
                              data-product-category="<%= ValidationUtil.sanitise(category) %>"
                              data-product-base-price="<%= price %>"
                              data-product-sizes="<%= ValidationUtil.sanitise(product.getSizes() == null ? "" : product.getSizes()) %>"
                              data-product-flavours="<%= ValidationUtil.sanitise(product.getFlavours() == null ? "" : product.getFlavours()) %>"
                              data-product-toppings="<%= ValidationUtil.sanitise(product.getToppings() == null ? "" : product.getToppings()) %>">
-                            <div class="product-title-row">
-                                <h3><%= ValidationUtil.sanitise(product.getName()) %></h3>
-                                <span class="price">Rs. <%= price %></span>
+
+                            <%-- Name + Price row --%>
+                            <div class="pc-title-row">
+                                <h3 class="pc-name"><%= ValidationUtil.sanitise(product.getName()) %></h3>
+                                <span class="pc-price">Rs. <%= price %></span>
                             </div>
-                            <p class="product-copy"><%= ValidationUtil.sanitise(product.getDescription()) %></p>
-                            <div class="tag-row">
-                                <span class="mini-tag"><%= ValidationUtil.sanitise(category) %></span>
-                                <% if (!ValidationUtil.isNullOrEmpty(product.getSizes()) || !ValidationUtil.isNullOrEmpty(product.getFlavours()) || !ValidationUtil.isNullOrEmpty(product.getToppings())) { %>
-                                    <span class="mini-tag">Customizable</span>
+
+                            <%-- Description --%>
+                            <p class="pc-desc"><%= ValidationUtil.sanitise(desc) %></p>
+
+                            <%-- Tags --%>
+                            <div class="pc-tags">
+                                <span class="pc-tag"><%= ValidationUtil.sanitise(category) %></span>
+                                <% if (!ValidationUtil.isNullOrEmpty(product.getSizes()) || !ValidationUtil.isNullOrEmpty(product.getFlavours())) { %>
+                                    <span class="pc-tag">Customizable</span>
                                 <% } %>
                             </div>
-                            <div class="card-actions">
-                                <button class="primary-action quick-cart-button" type="button"><%= loggedInUser != null ? "Add to Cart" : "Save to Cart" %></button>
-                                <a class="primary-action product-link" href="<%= contextPath %>/product-detail?id=<%= product.getProductId() %>">Customize Order</a>
+
+                            <%-- Actions: wide Order button + settings icon --%>
+                            <div class="pc-actions">
+                                <button class="pc-order-btn quick-cart-button" type="button">Order</button>
+                                <a class="pc-settings-btn" href="<%= contextPath %>/product-detail?id=<%= product.getProductId() %>"
+                                   title="Customize order" aria-label="Customize">
+                                    <span class="material-symbols-outlined">settings</span>
+                                </a>
                             </div>
                         </div>
                     </article>
                 <% } %>
             </div>
         <% } %>
+
     </section>
 </main>
 
@@ -203,9 +235,13 @@
                     optionsSummary: optionsSummary
                 });
 
-                button.textContent = "Added";
+                /* visual feedback */
+                const orig = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined">check</span> Added!';
+                button.style.background = '#2f7d32';
                 window.setTimeout(function () {
-                    button.textContent = "<%= loggedInUser != null ? "Add to Cart" : "Save to Cart" %>";
+                    button.innerHTML = orig;
+                    button.style.background = '';
                 }, 1400);
             });
         });

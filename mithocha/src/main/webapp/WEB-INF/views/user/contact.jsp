@@ -19,13 +19,20 @@
         <nav class="nav-links" aria-label="Primary">
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a href="${pageContext.request.contextPath}/products">Menu</a>
-            <a href="${pageContext.request.contextPath}/about">About</a>
+            <a href="${pageContext.request.contextPath}/blog">Blog</a>
             <a class="active" href="${pageContext.request.contextPath}/contact">Contact</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </a>
+            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
+               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+                <span class="material-symbols-outlined">logout</span>
+            </a>
+        </div>
     </div>
 </header>
 
@@ -161,12 +168,26 @@
 
     </section>
 
-    <!-- ── Map Placeholder ── -->
+    <!-- ── Map — Informatics College Pokhara ── -->
     <section class="map-section container">
-        <div class="map-placeholder">
-            <span class="material-symbols-outlined">map</span>
-            <p>Interactive map — embed Google Maps iframe here</p>
-            <small>Thamel, Kathmandu, Nepal</small>
+        <div class="map-label">
+            <span class="material-symbols-outlined">location_on</span>
+            <div>
+                <strong>Informatics College Pokhara</strong>
+                <span>Pokhara, Kaski, Nepal</span>
+            </div>
+        </div>
+        <div class="map-frame">
+            <iframe
+                title="Informatics College Pokhara location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.0!2d83.9856!3d28.2096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3995937bbf0376ff%3A0x6f2a8d5e3c1b4a2d!2sInformatics%20College%20Pokhara!5e0!3m2!1sen!2snp!4v1714900000000!5m2!1sen!2snp"
+                width="100%"
+                height="420"
+                style="border:0;border-radius:20px;display:block;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
     </section>
 

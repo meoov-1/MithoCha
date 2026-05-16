@@ -35,7 +35,7 @@
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a href="${pageContext.request.contextPath}/products">Menu</a>
             <a href="${pageContext.request.contextPath}/blog">Blog</a>
-            <a href="${pageContext.request.contextPath}/about">About</a>
+            <a href="${pageContext.request.contextPath}/contact">Contact</a>
             <a class="active" href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
         <div style="display:flex;align-items:center;gap:8px;">

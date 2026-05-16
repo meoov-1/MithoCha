@@ -20,7 +20,7 @@
             <a class="active" href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a href="${pageContext.request.contextPath}/products">Menu</a>
             <a href="${pageContext.request.contextPath}/blog">Blog</a>
-            <a href="${pageContext.request.contextPath}/about">About</a>
+            <a href="${pageContext.request.contextPath}/contact">Contact</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -51,7 +51,9 @@
         </div>
 
         <div class="hero-image-wrap">
-            <img class="hero-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF8SgqpiGHpWx_a3eXW4KfUvGhW65fpx9ztHhnlhjgDwmfWV35r7nDv5gKWcywovvCze4KKKf57feGVSxa2niRA2JyyrqZIPvvbi_z-SkEmbh8ab-DD3-cwIkZ3EgSN1kI-Z2gaxUC-AS8hdTcPS8IpRhTb4yB-wulTrLI5vz3WlrzwCGxcqZWwzLMLStegoIc1YgydRFQF95wmASkCYurZsS1MUliTYa0hvwpUSF4lBe3oKgZFyLolAlLhtooOoT_wcxnLLTsCNdb" alt="Bubble tea drink" width="520" height="624">
+            <img class="hero-image"
+                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZrGNHM-JSrZ_-EjQi0OE19cCc7gMWzcDxsbuq4KfoTE7CtfKH5v9F2rLZXPMtAlkDMkFtxfZICYUWw_eIZ6LfISL9yvx2lNmx3olN6xdIeoH7K3Ee_K5Tz3yjZ432htCEc0WCNTCzV6LUYOFfsEs_J9k4X5j8M3lhBvZO4l85-hcR2R7Xx_rJUWQby4784tXie9wCktgeXSgu6aYRS8vPAfYlZ_R_7ZsDB-By-QVoD3UfnsEtSOQIv-6WTnDHaQs7WFJ_snolrQ2"
+                 alt="MithoCha signature bubble tea" width="520" height="624">
             <div class="hero-floating-card">
                 <span class="material-symbols-outlined">coffee</span>
                 <div>
@@ -91,51 +93,87 @@
     </section>
 
     <section class="section container" id="discover">
-        <div class="section-heading">
-            <p class="page-tag">Discover our blends</p>
-            <h2 class="section-title">Designed for your daily craving</h2>
-            <p class="section-copy">Explore smooth classics, fruit-forward refreshers, and signature tea specials that match the mood of your day.</p>
+        <div class="section-heading split-heading">
+            <div>
+                <p class="page-tag">Discover our blends</p>
+                <h2 class="section-title">Designed for your daily craving</h2>
+                <p class="section-copy">Explore smooth classics, fruit-forward refreshers, and signature tea specials that match the mood of your day.</p>
+            </div>
+            <a class="btn-outline view-all-btn" href="${pageContext.request.contextPath}/products">
+                View Full Menu
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
         </div>
 
         <div class="menu-grid">
+            <%-- Card 1 — Gud-Caramel Butterscotch (featured/large) --%>
             <article class="menu-card menu-card-large">
-                <img src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=1200&q=80" alt="Creamy matcha latte" width="620" height="380" loading="lazy">
-                <button class="image-order-button" type="button" data-name="Classic Matcha Float" data-price="360" data-description="A silky matcha blend with a creamy finish and soft sweetness.">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZrGNHM-JSrZ_-EjQi0OE19cCc7gMWzcDxsbuq4KfoTE7CtfKH5v9F2rLZXPMtAlkDMkFtxfZICYUWw_eIZ6LfISL9yvx2lNmx3olN6xdIeoH7K3Ee_K5Tz3yjZ432htCEc0WCNTCzV6LUYOFfsEs_J9k4X5j8M3lhBvZO4l85-hcR2R7Xx_rJUWQby4784tXie9wCktgeXSgu6aYRS8vPAfYlZ_R_7ZsDB-By-QVoD3UfnsEtSOQIv-6WTnDHaQs7WFJ_snolrQ2"
+                     alt="Gud-Caramel Butterscotch bubble tea" width="620" height="380" loading="lazy">
+                <button class="image-order-button" type="button"
+                        data-name="Gud-Caramel Butterscotch"
+                        data-price="350"
+                        data-description="A rich, jaggery-infused butterscotch blend that captures the warmth of traditional Nepali sweetness.">
                     <span class="material-symbols-outlined">add_shopping_cart</span>
                     Order Now
                 </button>
                 <div class="menu-card-body">
-                    <p class="menu-tag">Customer favorite</p>
-                    <h3>Classic Matcha Float</h3>
-                    <p>A silky matcha blend with a creamy finish and soft sweetness.</p>
+                    <p class="menu-tag">Bestseller</p>
+                    <h3>Gud-Caramel Butterscotch</h3>
+                    <p>A rich, jaggery-infused butterscotch blend that captures the warmth of traditional Nepali sweetness.</p>
                 </div>
             </article>
 
+            <%-- Card 2 — Dark Chocolate --%>
             <article class="menu-card">
-                <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80" alt="Iced tea drink" width="380" height="250" loading="lazy">
-                <button class="image-order-button" type="button" data-name="Golden Milk Tea" data-price="340" data-description="Roasted tea, brown sugar pearls, and creamy milk layered beautifully.">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBquX2fNKHlLm4aGMoIl5OqewCbVzo7BJDy19gbdy2Ln-en1dklix1Ih2kfAWeSbVhSA6J_kn1hsGEEVw_qFl-QZNN0Md4DwIX9Sx4zMNkHrFeitnutGAQTMJxW9TJl9Xc3P3rbm_qCkVI3J_gEqG5q-3X0UqobxtPHei962zde8ElnRyawz1spQALNeqLOawkrAc-OE6MXjTfddoh10SokxQ-b6IGsvZbc3m6KWNQZ4a1Qjcq6S-AiOg3l60fMoE-oMv13HFSMPIdo"
+                     alt="Dark Chocolate bubble tea" width="380" height="250" loading="lazy">
+                <button class="image-order-button" type="button"
+                        data-name="Dark Chocolate"
+                        data-price="380"
+                        data-description="Deep cocoa layers met with fresh Himalayan milk for an intense, velvety chocolate escape.">
                     <span class="material-symbols-outlined">add_shopping_cart</span>
                     Order Now
                 </button>
                 <div class="menu-card-body">
-                    <p class="menu-tag">Brewed fresh</p>
-                    <h3>Golden Milk Tea</h3>
-                    <p>Roasted tea, brown sugar pearls, and creamy milk layered beautifully.</p>
+                    <p class="menu-tag">Bold &amp; Indulgent</p>
+                    <h3>Dark Chocolate</h3>
+                    <p>Deep cocoa layers met with fresh Himalayan milk for an intense, velvety chocolate escape.</p>
                 </div>
             </article>
 
+            <%-- Card 3 — Red Strawberry --%>
             <article class="menu-card">
-                <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80" alt="Fruit tea and herbal tea" width="380" height="250" loading="lazy">
-                <button class="image-order-button" type="button" data-name="Peach Jasmine Sparkle" data-price="390" data-description="Light floral notes with juicy peach flavor and a refreshing finish.">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjKtMt-cGyRjuS3wBgvv9GGeZQg18oha7X_8eOHFae6vCPJjeh4fB4ROD2lOhGwSkucYk1HDc5wzBhWDNTltTAvFEwxzzcgDS2mjjKISVl-PxnnYJ4AWwgda-04CNuoaKlSKo2IcvmJAS5HM0Pex-vVwp-ndfz3B5N4Ay04jVEn5i6oMVl7BCP-2D9g5IHXFqULub4i1JTnch08XXber5QQW6jsuiS2bDB5nQYyf_V6DgU3QuG3Am0u_X52iO654WXwJvE8peSm2zT"
+                     alt="Red Strawberry bubble tea" width="380" height="250" loading="lazy">
+                <button class="image-order-button" type="button"
+                        data-name="Red Strawberry"
+                        data-price="400"
+                        data-description="Sun-ripened strawberries blended into a refreshing tea for a burst of crimson joy.">
                     <span class="material-symbols-outlined">add_shopping_cart</span>
                     Order Now
                 </button>
                 <div class="menu-card-body">
-                    <p class="menu-tag">Limited time</p>
-                    <h3>Peach Jasmine Sparkle</h3>
-                    <p>Light floral notes with juicy peach flavor and a refreshing finish.</p>
+                    <p class="menu-tag">Fruit Tea</p>
+                    <h3>Red Strawberry</h3>
+                    <p>Sun-ripened strawberries blended into a refreshing tea for a burst of crimson joy.</p>
                 </div>
             </article>
+        </div>
+
+        <%-- "See more" row — always visible, links to full menu --%>
+        <div class="see-more-row">
+            <div class="see-more-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <a class="see-more-link" href="${pageContext.request.contextPath}/products">
+                <span class="material-symbols-outlined">restaurant_menu</span>
+                See all drinks
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+            <div class="see-more-dots">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </section>
 

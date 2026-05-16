@@ -259,3 +259,19 @@ select.field-input { cursor: pointer; appearance: none; background-image: url("d
   .nav-links { display: none; }
   .footer-links { grid-template-columns: 1fr; }
 }
+
+/* ── Map label above iframe ── */
+.map-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  background: var(--secondary-soft);
+  border-radius: 12px;
+  color: var(--secondary);
+}
+.map-label .material-symbols-outlined { font-size: 22px; flex-shrink: 0; }
+.map-label strong { display: block; font-size: 15px; font-weight: 700; color: var(--primary); }
+.map-label span   { font-size: 13px; color: var(--muted); }
+.map-frame { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); }
