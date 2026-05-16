@@ -28,12 +28,20 @@
         <nav class="nav-links" aria-label="Primary">
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a href="${pageContext.request.contextPath}/products">Menu</a>
+            <a href="${pageContext.request.contextPath}/blog">Blog</a>
+            <a href="${pageContext.request.contextPath}/about">About</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span class="cart-count">0</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </a>
+            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
+               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+                <span class="material-symbols-outlined">logout</span>
+            </a>
+        </div>
     </div>
 </header>
 
@@ -130,9 +138,9 @@
                     <div class="payment-section">
                         <h3 class="payment-title">Payment Method</h3>
                         <label class="payment-option selected">
-                            <input type="radio" name="paymentMethod" value="online" checked>
+                            <input type="radio" name="paymentMethod" value="khalti" checked>
                             <span class="material-symbols-outlined">payment</span>
-                            <span>Online Payment (Fonepay/Khalti)</span>
+                            <span>Khalti (Online Payment)</span>
                         </label>
                         <label class="payment-option">
                             <input type="radio" name="paymentMethod" value="cod">
@@ -183,6 +191,9 @@
     </div>
 </footer>
 
+<%-- ── Khalti Web Checkout SDK ── --%>
+<script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
 
 <%-- ── COD Confirmation Modal ── --%>
@@ -223,7 +234,7 @@
 
 <script>
     /* ================================================================
-       MithoCha Cart Page — cookie-based cart + COD confirmation popup
+       MithoCha Cart Page — cookie-based cart + Khalti + COD popup
        ================================================================ */
     (function () {
         var store    = window.MithoChaStorefront;
@@ -248,6 +259,11 @@
             checkoutStatus.classList.remove("hidden","success");
             checkoutStatus.classList.add("error");
             checkoutStatus.scrollIntoView({ behavior:"smooth", block:"nearest" });
+        }
+        function showInfo(msg) {
+            checkoutStatus.textContent = msg;
+            checkoutStatus.classList.remove("hidden","error");
+            checkoutStatus.classList.add("success");
         }
 
         /* ── Payment option highlight ── */
@@ -380,6 +396,50 @@
             document.getElementById("checkoutForm").submit();
         }
 
+        /* ── Khalti Payment ── */
+        function initiateKhaltiPayment() {
+            var cart     = store.getCart();
+            var shipping = buildShipping();
+            var total    = store.toNumber(document.getElementById("checkoutTotalAmount").value);
+
+            /* Khalti amount is in paisa (1 Rs = 100 paisa) */
+            var amountPaisa = Math.round(total * 100);
+
+            /* ── REPLACE THIS KEY with your real Khalti public key ── */
+            var KHALTI_PUBLIC_KEY = "test_public_key_dc74e0fd57cb46cd93832aee0a390234";
+
+            var config = {
+                publicKey: KHALTI_PUBLIC_KEY,
+                productIdentity: "mithocha-order-" + Date.now(),
+                productName: "MithoCha Order (" + cart.length + " item" + (cart.length !== 1 ? "s" : "") + ")",
+                productUrl: window.location.origin + "${pageContext.request.contextPath}/products",
+                paymentPreference: ["KHALTI", "EBANKING", "MOBILE_BANKING", "CONNECT_IPS", "SCT"],
+                eventHandler: {
+                    onSuccess: function(payload) {
+                        /* payload.token and payload.amount come from Khalti */
+                        showInfo("Payment successful! Saving your order…");
+                        submitOrder("khalti", "Khalti Online Payment", {
+                            transaction_id: payload.token,
+                            khalti_amount:  payload.amount,
+                            status:         "paid"
+                        });
+                    },
+                    onError: function(error) {
+                        showError("Khalti payment failed: " + (error.detail || "Please try again."));
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = "Confirm Order";
+                    },
+                    onClose: function() {
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = "Confirm Order";
+                    }
+                }
+            };
+
+            var checkout = new KhaltiCheckout(config);
+            checkout.show({ amount: amountPaisa });
+        }
+
         /* ── COD Modal open / close ── */
         function openCodModal() {
             codModal.classList.add("open");
@@ -421,7 +481,7 @@
         confirmBtn.addEventListener("click", function() {
             var cart     = store.getCart();
             var shipping = buildShipping();
-            if (!cart.length)          { showError("Add at least one drink before confirming."); return; }
+            if (!cart.length)           { showError("Add at least one drink before confirming."); return; }
             if (!validateForm(shipping)) return;
 
             var method = document.querySelector('input[name="paymentMethod"]:checked').value;
@@ -432,12 +492,16 @@
                 document.getElementById("codConfirmPhone").value = shipping.phone    || "";
                 document.getElementById("codModalError").style.display = "none";
                 openCodModal();
-            } else {
-                /* Online payment — submit directly */
-                submitOrder("online", "Online Payment (Fonepay/Khalti)", {
-                    transaction_id: "ONL-" + Date.now(),
-                    status: "paid"
-                });
+
+            } else if (method === "khalti") {
+                /* Check Khalti SDK loaded */
+                if (typeof KhaltiCheckout === "undefined") {
+                    showError("Khalti payment is not available right now. Please use Cash on Delivery.");
+                    return;
+                }
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = "Opening Khalti…";
+                initiateKhaltiPayment();
             }
         });
 

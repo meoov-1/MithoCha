@@ -34,12 +34,20 @@
         <nav class="nav-links" aria-label="Primary">
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a href="${pageContext.request.contextPath}/products">Menu</a>
+            <a href="${pageContext.request.contextPath}/blog">Blog</a>
+            <a href="${pageContext.request.contextPath}/about">About</a>
             <a class="active" href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span class="cart-count">0</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </a>
+            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
+               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+                <span class="material-symbols-outlined">logout</span>
+            </a>
+        </div>
     </div>
 </header>
 
@@ -63,14 +71,27 @@
 
         <section class="profile-layout">
             <aside class="page-card profile-photo-card">
-                <div class="avatar-preview" aria-label="Profile photo preview">
-                    <img id="profileImagePreview" src="<%= ValidationUtil.sanitise(ValidationUtil.isNullOrEmpty(resolvedImageUrl) ? placeholderImage : resolvedImageUrl) %>" alt="Selected profile preview">
-                    <span class="material-symbols-outlined">person</span>
+                <div class="avatar-preview" aria-label="Profile photo preview" id="avatarWrap">
+                    <img id="profileImagePreview"
+                         src="<%= ValidationUtil.sanitise(ValidationUtil.isNullOrEmpty(resolvedImageUrl) ? placeholderImage : resolvedImageUrl) %>"
+                         alt="Profile photo"
+                         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;">
                 </div>
                 <div>
-                    <h2 class="placeholder-title">Account Snapshot</h2>
-                    <p class="placeholder-copy">Your profile image, name, and saved order history all come from the backend now.</p>
+                    <h2 class="placeholder-title">Profile Photo</h2>
+                    <p class="placeholder-copy">Upload a clear photo. JPG, PNG or WEBP — max 5 MB.</p>
                 </div>
+
+                <%-- Hidden file input triggered by the button below --%>
+                <input class="file-input" id="profileImageFile" name="profileImage"
+                       type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+                       style="display:none;">
+
+                <label class="upload-button" for="profileImageFile" style="cursor:pointer;">
+                    <span class="material-symbols-outlined">add_photo_alternate</span>
+                    Choose Photo
+                </label>
+
                 <div class="profile-summary-list">
                     <div>
                         <strong>Name</strong>
@@ -81,7 +102,7 @@
                         <span><%= ValidationUtil.sanitise(user.getEmail()) %></span>
                     </div>
                     <div>
-                        <strong>Orders Saved</strong>
+                        <strong>Orders</strong>
                         <span><%= orders == null ? 0 : orders.size() %></span>
                     </div>
                 </div>

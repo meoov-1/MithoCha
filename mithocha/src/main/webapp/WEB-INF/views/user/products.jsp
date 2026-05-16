@@ -27,12 +27,20 @@
         <nav class="nav-links" aria-label="Primary">
             <a href="${pageContext.request.contextPath}/dashboard">Home</a>
             <a class="active" href="${pageContext.request.contextPath}/products">Menu</a>
+            <a href="${pageContext.request.contextPath}/blog">Blog</a>
+            <a href="${pageContext.request.contextPath}/about">About</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span class="cart-count">0</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </a>
+            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
+               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+                <span class="material-symbols-outlined">logout</span>
+            </a>
+        </div>
     </div>
 </header>
 

@@ -18,13 +18,21 @@
         <a class="logo" href="${pageContext.request.contextPath}/dashboard">MithoCha</a>
         <nav class="nav-links" aria-label="Primary">
             <a class="active" href="${pageContext.request.contextPath}/dashboard">Home</a>
-            <a  href="${pageContext.request.contextPath}/products">Menu</a>
+            <a href="${pageContext.request.contextPath}/products">Menu</a>
+            <a href="${pageContext.request.contextPath}/blog">Blog</a>
+            <a href="${pageContext.request.contextPath}/about">About</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span class="cart-count" id="cartCount"></span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cart-count" id="cartCount"></span>
+            </a>
+            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
+               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+                <span class="material-symbols-outlined">logout</span>
+            </a>
+        </div>
     </div>
 </header>
 
@@ -177,5 +185,55 @@
 
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+<script>
+    /* ── Home page "Order Now" buttons → add to cart ── */
+    (function () {
+        var store = window.MithoChaStorefront;
+
+        document.querySelectorAll(".image-order-button").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var name        = btn.dataset.name        || "Bubble Tea";
+                var price       = parseFloat(btn.dataset.price) || 0;
+                var description = btn.dataset.description || "";
+                var imageUrl    = "";
+
+                /* grab the nearest img inside the same article */
+                var card = btn.closest("article");
+                if (card) {
+                    var img = card.querySelector("img");
+                    if (img) imageUrl = img.src;
+                }
+
+                store.addCartItem({
+                    productId:      0,
+                    name:           name,
+                    imageUrl:       imageUrl,
+                    description:    description,
+                    category:       "Signature",
+                    basePrice:      price,
+                    unitPrice:      price,
+                    quantity:       1,
+                    size:           "Regular",
+                    flavour:        "",
+                    topping:        "",
+                    iceLevel:       "Regular Ice",
+                    sugarLevel:     "50%",
+                    optionsSummary: "Regular • 50% Sugar • Regular Ice"
+                });
+
+                /* visual feedback */
+                var original = btn.innerHTML;
+                btn.innerHTML = '<span class="material-symbols-outlined">check</span> Added!';
+                btn.style.background = "var(--secondary)";
+                btn.style.color = "#fff";
+                setTimeout(function () {
+                    btn.innerHTML = original;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }, 1400);
+            });
+        });
+    })();
+</script>
 </body>
 </html>

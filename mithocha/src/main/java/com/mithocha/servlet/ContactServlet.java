@@ -22,7 +22,7 @@ import java.io.IOException;
  *     <textarea name="message" ...> → request.getParameter("message")
  *   </form>
  */
-@WebServlet(urlPatterns = {"/contact", "/about"})
+@WebServlet(urlPatterns = {"/contact", "/about", "/blog"})
 public class ContactServlet extends HttpServlet {
 
     @Override
@@ -33,6 +33,9 @@ public class ContactServlet extends HttpServlet {
 
         if ("/about".equals(path)) {
             request.getRequestDispatcher("/WEB-INF/views/user/about.jsp")
+                   .forward(request, response);
+        } else if ("/blog".equals(path)) {
+            request.getRequestDispatcher("/WEB-INF/views/user/blog.jsp")
                    .forward(request, response);
         } else {
             request.getRequestDispatcher("/WEB-INF/views/user/contact.jsp")

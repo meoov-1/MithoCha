@@ -1,11 +1,10 @@
 package com.mithocha.util;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * PasswordUtil – BCrypt hashing for new passwords, with backward-compatible
