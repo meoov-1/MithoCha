@@ -20,14 +20,8 @@ import jakarta.servlet.http.Part;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Date;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * ProfileServlet – serves the profile page and handles profile save.
@@ -88,10 +82,17 @@ public class ProfileServlet extends HttpServlet {
         String favoriteDrink = request.getParameter("favoriteDrink");
         String profileImageUrl = existing != null ? existing.getProfileImageUrl() : null;
 
+        // Read uploaded image bytes — stored in DB as binary so it persists across redeploys
+        byte[] uploadedImageData = null;
+        String uploadedImageContentType = null;
         Part profileImagePart = request.getPart("profileImage");
-        String uploadedImageUrl = saveProfileImage(profileImagePart, request);
-        if (uploadedImageUrl != null) {
-            profileImageUrl = uploadedImageUrl;
+        if (profileImagePart != null && profileImagePart.getSize() > 0
+                && !ValidationUtil.isNullOrEmpty(profileImagePart.getSubmittedFileName())) {
+            String ext = getFileExtension(profileImagePart.getSubmittedFileName());
+            if (isSupportedImageExtension(ext)) {
+                uploadedImageData = profileImagePart.getInputStream().readAllBytes();
+                uploadedImageContentType = profileImagePart.getContentType();
+            }
         }
 
         if (ValidationUtil.isNullOrEmpty(fullName)) {
@@ -129,47 +130,32 @@ public class ProfileServlet extends HttpServlet {
             Profile newProfile = new Profile(userId, trimToNull(phone), trimToNull(address),
                     trimToNull(city), trimToNull(postalCode), trimToNull(profileImageUrl),
                     null, bio, dob);
+            if (uploadedImageData != null) {
+                newProfile.setProfileImageData(uploadedImageData);
+                newProfile.setProfileImageContentType(uploadedImageContentType);
+                newProfile.setProfileImageUrl(null); // use binary, not URL
+            }
             profileDAO.insertProfile(newProfile);
         } else {
             existing.setPhone(trimToNull(phone));
             existing.setAddress(trimToNull(address));
             existing.setCity(trimToNull(city));
             existing.setPostalCode(trimToNull(postalCode));
-            existing.setProfileImageUrl(trimToNull(profileImageUrl));
             existing.setDateOfBirth(dob);
             existing.setBio(bio);
+            if (uploadedImageData != null) {
+                // New image uploaded — store binary, clear old URL
+                existing.setProfileImageData(uploadedImageData);
+                existing.setProfileImageContentType(uploadedImageContentType);
+                existing.setProfileImageUrl(null);
+            } else {
+                // No new image — keep whatever was already in the DB (binary or URL)
+                existing.setProfileImageUrl(trimToNull(profileImageUrl));
+            }
             profileDAO.updateProfile(existing);
         }
 
         response.sendRedirect(request.getContextPath() + "/profile?saved=true");
-    }
-
-    private String saveProfileImage(Part imagePart, HttpServletRequest request) throws IOException {
-        if (imagePart == null || imagePart.getSize() <= 0) {
-            return null;
-        }
-
-        String submittedName = imagePart.getSubmittedFileName();
-        if (ValidationUtil.isNullOrEmpty(submittedName)) {
-            return null;
-        }
-
-        String extension = getFileExtension(submittedName);
-        if (!isSupportedImageExtension(extension)) {
-            return null;
-        }
-
-        Path uploadDir = resolveUploadDirectory(request);
-        Files.createDirectories(uploadDir);
-
-        String fileName = "profile-" + UUID.randomUUID() + extension;
-        Path target = uploadDir.resolve(fileName);
-
-        try (InputStream inputStream = imagePart.getInputStream()) {
-            Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return "uploads/profiles/" + fileName;
     }
 
     private void forwardToProfile(HttpServletRequest request, HttpServletResponse response)
@@ -281,14 +267,6 @@ public class ProfileServlet extends HttpServlet {
 
     private String defaultString(String value) {
         return value == null ? "" : value;
-    }
-
-    private Path resolveUploadDirectory(HttpServletRequest request) {
-        String realPath = request.getServletContext().getRealPath("/uploads/profiles");
-        if (!ValidationUtil.isNullOrEmpty(realPath)) {
-            return Paths.get(realPath);
-        }
-        return Paths.get(System.getProperty("user.dir"), "src", "main", "webapp", "uploads", "profiles");
     }
 
     private String getFileExtension(String fileName) {

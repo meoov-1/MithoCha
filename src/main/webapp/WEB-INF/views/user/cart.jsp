@@ -238,6 +238,13 @@
        ================================================================ */
     (function () {
         var store    = window.MithoChaStorefront;
+
+        /* Guard: storefront must be loaded */
+        if (!store) {
+            var c = document.getElementById("cartItemsContainer");
+            if (c) c.innerHTML = '<div class="empty-cart-message"><p>Cart could not load. Please <a href="">refresh</a>.</p></div>';
+            return;
+        }
         var DELIVERY = 50;
 
         /* ── DOM refs ── */

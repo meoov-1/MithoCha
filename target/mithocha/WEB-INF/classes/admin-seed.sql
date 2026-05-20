@@ -10,7 +10,7 @@
 -- Run this script only if you want the row pre-seeded in the DB.
 -- ============================================================
 
-USE MithoCha;
+USE mithocha;
 
 INSERT INTO users (name, email, password, role)
 VALUES ('Admin', 'admin@gmail.com', 'PLAIN:admin', 'admin')

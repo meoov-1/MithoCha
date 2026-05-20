@@ -23,9 +23,17 @@
             <a href="${pageContext.request.contextPath}/contact">Contact</a>
             <a href="${pageContext.request.contextPath}/profile">Profile</a>
         </nav>
-        <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
-            <span class="material-symbols-outlined">shopping_cart</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
+                <span class="material-symbols-outlined">shopping_cart</span>
+            </a>
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
     </div>
 </header>
 
@@ -215,5 +223,6 @@
     </div>
 </footer>
 
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 </body>
 </html>

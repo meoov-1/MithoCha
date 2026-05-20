@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.List,java.time.format.DateTimeFormatter,com.mithocha.model.User,com.mithocha.model.Profile,com.mithocha.model.Order,com.mithocha.util.ValidationUtil" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.List,java.time.format.DateTimeFormatter,java.util.Base64,com.mithocha.model.User,com.mithocha.model.Profile,com.mithocha.model.Order,com.mithocha.util.ValidationUtil" %>
 <%
     User user = (User) request.getAttribute("user");
     Profile profile = (Profile) request.getAttribute("profile");
@@ -7,11 +7,23 @@
     String profileGender = (String) request.getAttribute("profileGender");
     String profileFavoriteDrink = (String) request.getAttribute("profileFavoriteDrink");
     String profileNotes = (String) request.getAttribute("profileNotes");
-    String placeholderImage = "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80";
-    String imageUrl = profile != null && !ValidationUtil.isNullOrEmpty(profile.getProfileImageUrl()) ? profile.getProfileImageUrl() : "";
-    String resolvedImageUrl = imageUrl;
-    if (!ValidationUtil.isNullOrEmpty(imageUrl) && !imageUrl.startsWith("http://") && !imageUrl.startsWith("https://") && !imageUrl.startsWith("/")) {
-        resolvedImageUrl = contextPath + "/" + imageUrl;
+    String placeholderImage = "https://ui-avatars.com/api/?name=" +
+        java.net.URLEncoder.encode(user != null ? user.getName() : "User", "UTF-8") +
+        "&background=7d562d&color=fff8f6&size=200&bold=true";
+
+    // Resolve profile image: prefer binary data (DB-stored), fall back to URL
+    String resolvedImageUrl = placeholderImage;
+    if (profile != null) {
+        byte[] imgData = profile.getProfileImageData();
+        String imgType = profile.getProfileImageContentType();
+        if (imgData != null && imgData.length > 0 && imgType != null) {
+            // Binary stored in DB — render as data URI (persists forever)
+            resolvedImageUrl = "data:" + imgType + ";base64," + Base64.getEncoder().encodeToString(imgData);
+        } else if (!ValidationUtil.isNullOrEmpty(profile.getProfileImageUrl())) {
+            String url = profile.getProfileImageUrl();
+            resolvedImageUrl = (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
+                ? url : contextPath + "/" + url;
+        }
     }
     DateTimeFormatter orderFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a");
 %>
@@ -41,12 +53,14 @@
         <div style="display:flex;align-items:center;gap:8px;">
             <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
@@ -56,7 +70,7 @@
         <section class="page-hero">
             <p class="page-tag">Profile</p>
             <h1 class="page-title">My Profile</h1>
-            <p class="page-copy">This page now reads and writes real `users`, `profile`, and `orders` data, so the values you save here are persisted to your `mithocha` database.</p>
+            <p class="page-copy">Build your profile perfectly.</p>
         </section>
 
         <% if (request.getAttribute("errorMessage") != null) { %>
@@ -73,7 +87,7 @@
             <aside class="page-card profile-photo-card">
                 <div class="avatar-preview" aria-label="Profile photo preview" id="avatarWrap">
                     <img id="profileImagePreview"
-                         src="<%= ValidationUtil.sanitise(ValidationUtil.isNullOrEmpty(resolvedImageUrl) ? placeholderImage : resolvedImageUrl) %>"
+                         src="<%= ValidationUtil.sanitise(resolvedImageUrl) %>"
                          alt="Profile photo"
                          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;">
                 </div>
@@ -269,28 +283,37 @@
 </footer>
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 <script>
     (function () {
-        const imageInput = document.getElementById("profileImageFile");
-        const preview = document.getElementById("profileImagePreview");
-        const fallbackPreview = preview.src;
+        // All file inputs with id="profileImageFile" — pick the visible one in the form
+        var imageInputs = document.querySelectorAll('input[type="file"][name="profileImage"]');
+        var preview = document.getElementById("profileImagePreview");
 
-        function updatePreview() {
-            const file = imageInput.files && imageInput.files[0];
-            if (!file) {
-                preview.src = fallbackPreview;
-                return;
-            }
-
-            const objectUrl = URL.createObjectURL(file);
-            preview.src = objectUrl;
-        }
-
-        imageInput.addEventListener("change", updatePreview);
+        imageInputs.forEach(function(input) {
+            input.addEventListener("change", function () {
+                var file = this.files && this.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(e) { preview.src = e.target.result; };
+                reader.readAsDataURL(file);
+                // Sync to the other input if there are two
+                imageInputs.forEach(function(other) {
+                    if (other !== input) {
+                        try {
+                            var dt = new DataTransfer();
+                            dt.items.add(file);
+                            other.files = dt.files;
+                        } catch(e) {}
+                    }
+                });
+            });
+        });
 
         if (new URLSearchParams(window.location.search).get("orderPlaced") === "true") {
-            window.localStorage.removeItem("mithocha-cart");
+            window.localStorage.removeItem("mithocha_cart");
             if (window.MithoChaStorefront) {
+                window.MithoChaStorefront.clearCart();
                 window.MithoChaStorefront.updateCartCount();
             }
         }

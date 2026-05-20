@@ -44,12 +44,14 @@
         <div style="display:flex;align-items:center;gap:8px;">
             <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
@@ -246,6 +248,7 @@
 </main>
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 <script>
     (function () {
         const store = window.MithoChaStorefront;
@@ -431,7 +434,8 @@
             document.getElementById("itemTotal").textContent = store.formatCurrency(unitPrice() * state.quantity);
         }
 
-        document.getElementById("addToCart").addEventListener("click", function () {
+        var button = document.getElementById("addToCart");
+        button.addEventListener("click", function () {
             if (!isAvailable) {
                 return;
             }
@@ -457,8 +461,10 @@
                 sugarLevel: state.sugarLevel + "%",
                 optionsSummary: document.getElementById("summaryOptions").textContent
             });
+            store.updateCartCount();
 
-            window.location.href = contextPath + "/cart";
+            button.innerHTML = '<span class="material-symbols-outlined">check<\/span> Added!';
+            button.disabled = true;
         });
 
         if (!isAvailable) {

@@ -330,10 +330,11 @@ main {
   position: relative;
   justify-self: end;
   width: min(100%, 520px);
-  aspect-ratio: 5 / 6;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  /* No background, no border-radius, no shadow, no overflow hidden —
+     the cup floats directly on the page background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-image {
@@ -429,7 +430,11 @@ main {
   box-shadow: var(--shadow-soft);
 }
 
+/* Feature strip items sit on the page background — no card */
 .feature-card {
+  border: none;
+  background: transparent;
+  box-shadow: none;
   border-radius: var(--radius-lg);
   padding: 24px;
   display: flex;

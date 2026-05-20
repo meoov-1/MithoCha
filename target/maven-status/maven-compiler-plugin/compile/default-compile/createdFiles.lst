@@ -21,6 +21,7 @@ com\mithocha\dao\OrderDAO.class
 com\mithocha\model\ProductTopping.class
 com\mithocha\exception\ApiException.class
 com\mithocha\model\Payment.class
+com\mithocha\servlet\DashboardServlet.class
 com\mithocha\filter\ApiExceptionFilter.class
 com\mithocha\dao\CartDAO.class
 com\mithocha\servlet\api\BaseApiServlet.class

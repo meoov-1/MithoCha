@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.List,com.mithocha.model.Product,com.mithocha.dao.impl.ProductDAOImpl,com.mithocha.util.ValidationUtil" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,250 +27,108 @@
         <div style="display:flex;align-items:center;gap:8px;">
             <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
 
 <main>
 
-    <%-- ── Hero ── --%>
+    <%-- ── Hero — About MithoCha ── --%>
     <section class="blog-hero">
         <div class="container">
-            <p class="eyebrow">Stories &amp; Sips</p>
-            <h1 class="hero-title">The MithoCha Journal</h1>
-            <p class="hero-sub">Tea culture, brewing tips, seasonal flavours, and the people behind every cup.</p>
+            <p class="eyebrow">About</p>
+            <h1 class="hero-title">About MithoCha</h1>
+            <p class="hero-sub">A community-focused tea house celebrating Himalayan teas, craftsmanship, and warm hospitality.</p>
         </div>
     </section>
 
-    <%-- ── Featured Post ── --%>
+    <%-- ── About MithoCha — Story & Visit ── --%>
     <section class="section container">
         <article class="featured-post">
             <div class="featured-image-wrap">
-                <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1200&q=80"
-                     alt="Golden Milk Tea being poured" loading="lazy">
-                <span class="post-tag">Featured</span>
+                <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=1200&q=80"
+                     alt="Cozy tea shop interior" loading="lazy">
             </div>
             <div class="featured-body">
                 <div class="post-meta">
-                    <span class="meta-cat">Tea Culture</span>
+                    <span class="meta-cat">Our Story</span>
                     <span class="meta-dot">·</span>
-                    <span class="meta-date">April 28, 2026</span>
-                    <span class="meta-dot">·</span>
-                    <span class="meta-read">5 min read</span>
+                    <span class="meta-date">Established 2020</span>
                 </div>
-                <h2 class="post-title">Why Brown Sugar Milk Tea Became Nepal's Favourite Comfort Drink</h2>
+                <h2 class="post-title">MithoCha — From Farm to Cup</h2>
                 <p class="post-excerpt">
-                    From the bustling streets of Thamel to quiet study corners in Lalitpur, the caramelised warmth
-                    of brown sugar milk tea has quietly become a daily ritual for thousands of Nepalis. We trace
-                    its journey from Taiwanese origins to a distinctly Himalayan identity.
+                    What began as a small stall in Kathmandu has grown into a community tea house dedicated to
+                    celebrating Himalayan tea traditions. We partner with smallholder farmers in Ilam, blend
+                    time-honoured techniques with modern flavours, and craft each cup by hand.
                 </p>
-                <a class="read-more" href="#post-1">
-                    Read Article
-                    <span class="material-symbols-outlined">arrow_forward</span>
-                </a>
+                <p class="post-excerpt">
+                    Our mission is simple: make every cup meaningful. That means sourcing responsibly, reducing waste,
+                    and training our team to brew with care. Whether you're here for a quick pick-up or to linger over
+                    a book, MithoCha is designed to feel like a warm, familiar pause in your day.
+                </p>
+                <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+                    <a class="read-more" href="#values">Our Values</a>
+                    <a class="read-more" href="#visit" style="background:#fff8f6;color:#4b2c20;">Visit Us</a>
+                </div>
             </div>
         </article>
-    </section>
 
-    <%-- ── Category Filter ── --%>
-    <section class="container">
-        <div class="category-strip">
-            <button class="cat-btn active" onclick="filterPosts('all', this)">All</button>
-            <button class="cat-btn" onclick="filterPosts('tea-culture', this)">Tea Culture</button>
-            <button class="cat-btn" onclick="filterPosts('recipes', this)">Recipes</button>
-            <button class="cat-btn" onclick="filterPosts('health', this)">Health &amp; Wellness</button>
-            <button class="cat-btn" onclick="filterPosts('behind-the-cup', this)">Behind the Cup</button>
-            <button class="cat-btn" onclick="filterPosts('seasonal', this)">Seasonal</button>
+        <div id="values" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:30px;">
+            <div style="background:#fff;border:1px solid var(--border);padding:20px;border-radius:16px;">
+                <h3 style="margin:0 0 8px;color:var(--primary);">Craftsmanship</h3>
+                <p style="margin:0;color:var(--muted);">Every recipe is hand-tested; our baristas are trained to extract precise flavour and texture.</p>
+            </div>
+            <div style="background:#fff;border:1px solid var(--border);padding:20px;border-radius:16px;">
+                <h3 style="margin:0 0 8px;color:var(--primary);">Sourcing</h3>
+                <p style="margin:0;color:var(--muted);">We work directly with Ilam tea growers to ensure fair compensation and sustainable practices.</p>
+            </div>
+            <div style="background:#fff;border:1px solid var(--border);padding:20px;border-radius:16px;">
+                <h3 style="margin:0 0 8px;color:var(--primary);">Community</h3>
+                <p style="margin:0;color:var(--muted);">MithoCha hosts local events, brew workshops, and supports neighborhood initiatives.</p>
+            </div>
+        </div>
+
+        <section id="visit" style="margin-top:34px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+            <div style="flex:1;min-width:300px;background:#fff;border-radius:16px;padding:20px;border:1px solid var(--border);">
+                <h3 style="margin-top:0;color:var(--primary);">Visit Our Cafe</h3>
+                <p style="color:var(--muted);">Drop in for daily favourites or try one of our seasonal specials. We offer pickup, dine-in, and light snacks.</p>
+                <ul style="color:var(--muted);padding-left:18px;">
+                    <li><strong>Address:</strong> Thamel, Kathmandu</li>
+                    <li><strong>Hours:</strong> Mon–Sun 09:00 — 21:00</li>
+                    <li><strong>Phone:</strong> +977 1 555 0123</li>
+                </ul>
+                <p style="margin-top:12px;color:var(--muted);">Find us on Google Maps or send us a message — we're happy to answer questions about menu items and accessibility.</p>
+            </div>
+            <div style="flex:1;min-width:320px;">
+                <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-soft);">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Cafe seating" style="width:100%;height:100%;object-fit:cover;display:block;">
+                </div>
+            </div>
+        </section>
+
+        <div style="margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;">
+            <div style="background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border);">
+                <h4 style="margin:0 0 8px;color:var(--primary);">Our Story</h4>
+                <p style="margin:0;color:var(--muted);">Started by friends who loved tea and conversation, MithoCha grew from a shared dream: to make quality tea approachable. We began with community pop-ups and today maintain the same curiosity and warmth that started it all.</p>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border);">
+                <h4 style="margin:0 0 8px;color:var(--primary);">Sustainability</h4>
+                <p style="margin:0;color:var(--muted);">We minimise single-use packaging, recycle tea waste as compost, and choose suppliers who share our environmental goals.</p>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border);">
+                <h4 style="margin:0 0 8px;color:var(--primary);">Community Events</h4>
+                <p style="margin:0;color:var(--muted);">From cupping sessions to local artist nights, join our calendar of events to meet neighbors and learn something new.</p>
+            </div>
         </div>
     </section>
-
-    <%-- ── Post Grid ── --%>
-    <section class="section container">
-        <div class="posts-grid" id="postsGrid">
-
-            <%-- Post 1 --%>
-            <article class="post-card" data-category="tea-culture" id="post-1">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80"
-                         alt="Matcha preparation" loading="lazy">
-                    <span class="post-tag">Tea Culture</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">April 20, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">4 min read</span>
-                    </div>
-                    <h3 class="post-title">The Art of Matcha: From Ceremony to Bubble Tea</h3>
-                    <p class="post-excerpt">
-                        Matcha has travelled centuries from Japanese tea ceremonies to modern bubble tea shops.
-                        Here's how we honour that heritage in every MithoCha Matcha Float.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#f0bd8b,#7d562d);">A</div>
-                            <span>Aarav Shrestha</span>
-                        </div>
-                        <a class="read-more-sm" href="#post-1-full">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-            <%-- Post 2 --%>
-            <article class="post-card" data-category="recipes">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=80"
-                         alt="Fruit tea ingredients" loading="lazy">
-                    <span class="post-tag">Recipes</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">April 14, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">6 min read</span>
-                    </div>
-                    <h3 class="post-title">How to Make Peach Jasmine Tea at Home</h3>
-                    <p class="post-excerpt">
-                        Our Peach Jasmine Sparkle is one of the most-ordered drinks on the menu. We're sharing
-                        the recipe so you can recreate the magic in your own kitchen.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#ffdcbd,#9a6113);">P</div>
-                            <span>Priya Tamang</span>
-                        </div>
-                        <a class="read-more-sm" href="#recipe-peach">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-            <%-- Post 3 --%>
-            <article class="post-card" data-category="health">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80"
-                         alt="Healthy tea" loading="lazy">
-                    <span class="post-tag">Health &amp; Wellness</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">April 8, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">3 min read</span>
-                    </div>
-                    <h3 class="post-title">5 Reasons Bubble Tea Can Be Part of a Balanced Diet</h3>
-                    <p class="post-excerpt">
-                        Bubble tea gets a bad reputation for sugar content — but with the right choices,
-                        it can fit comfortably into a healthy lifestyle. Here's what the science says.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#ffe9e4,#7b5647);">R</div>
-                            <span>Rohan Gurung</span>
-                        </div>
-                        <a class="read-more-sm" href="#health-bubble">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-            <%-- Post 4 --%>
-            <article class="post-card" data-category="behind-the-cup">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80"
-                         alt="MithoCha team" loading="lazy">
-                    <span class="post-tag">Behind the Cup</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">March 30, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">7 min read</span>
-                    </div>
-                    <h3 class="post-title">Meet the Farmers Behind Our Ilam Tea Leaves</h3>
-                    <p class="post-excerpt">
-                        Every cup of MithoCha starts in the misty hills of Ilam. We visited the farms that
-                        supply our premium tea leaves and spoke to the families who grow them.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#f0bd8b,#7d562d);">A</div>
-                            <span>Aarav Shrestha</span>
-                        </div>
-                        <a class="read-more-sm" href="#ilam-farmers">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-            <%-- Post 5 --%>
-            <article class="post-card" data-category="seasonal">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=80"
-                         alt="Seasonal drinks" loading="lazy">
-                    <span class="post-tag">Seasonal</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">March 22, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">2 min read</span>
-                    </div>
-                    <h3 class="post-title">Introducing Our Summer 2026 Seasonal Menu</h3>
-                    <p class="post-excerpt">
-                        Mango Lassi Boba, Lychee Rose Sparkle, and Himalayan Mint Cooler — our summer
-                        specials are here for a limited time. Here's what inspired each one.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#ffdcbd,#9a6113);">P</div>
-                            <span>Priya Tamang</span>
-                        </div>
-                        <a class="read-more-sm" href="#summer-menu">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-            <%-- Post 6 --%>
-            <article class="post-card" data-category="recipes">
-                <div class="post-image-wrap">
-                    <img src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80"
-                         alt="Tapioca pearls" loading="lazy">
-                    <span class="post-tag">Recipes</span>
-                </div>
-                <div class="post-body">
-                    <div class="post-meta">
-                        <span class="meta-date">March 15, 2026</span>
-                        <span class="meta-dot">·</span>
-                        <span class="meta-read">5 min read</span>
-                    </div>
-                    <h3 class="post-title">The Perfect Tapioca Pearl: Chewy, Not Gummy</h3>
-                    <p class="post-excerpt">
-                        Getting the boba texture right is harder than it looks. Our head brewer shares
-                        the exact timing, temperature, and resting technique we use every morning.
-                    </p>
-                    <div class="post-footer">
-                        <div class="author">
-                            <div class="author-avatar" style="background:linear-gradient(135deg,#ffe9e4,#7b5647);">R</div>
-                            <span>Rohan Gurung</span>
-                        </div>
-                        <a class="read-more-sm" href="#tapioca-guide">Read more</a>
-                    </div>
-                </div>
-            </article>
-
-        </div><%-- /posts-grid --%>
-
-        <%-- Empty state (shown by JS when filter has no results) --%>
-        <div id="noPostsMsg" style="display:none;text-align:center;padding:60px 20px;color:#504440;">
-            <span class="material-symbols-outlined" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">article</span>
-            <p style="font-size:16px;font-weight:500;">No posts in this category yet. Check back soon!</p>
-        </div>
-    </section>
-
     <%-- ── Newsletter CTA ── --%>
     <section class="newsletter-section">
         <div class="container newsletter-card">
@@ -329,6 +187,7 @@
 </footer>
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 <script>
     /* ── Category filter ── */
     function filterPosts(category, btn) {

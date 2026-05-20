@@ -174,7 +174,11 @@
       <a href="${pageContext.request.contextPath}/admin/billing"   class="nav-item active"><span class="material-symbols-outlined">payments</span>Billing</a>
     </nav>
     <div class="sidebar-footer">
-      <a href="${pageContext.request.contextPath}/logout" class="nav-item"><span class="material-symbols-outlined">logout</span>Logout</a>
+      <button class="nav-item logout-trigger" 
+              data-logout-url="${pageContext.request.contextPath}/logout"
+              style="background:none;border:none;cursor:pointer;width:100%;text-align:left;color:inherit;font-family:inherit;font-size:inherit;">
+          <span class="material-symbols-outlined">logout</span>Logout
+      </button>
     </div>
   </aside>
 

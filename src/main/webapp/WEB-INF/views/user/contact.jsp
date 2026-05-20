@@ -26,12 +26,14 @@
         <div style="display:flex;align-items:center;gap:8px;">
             <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
@@ -61,7 +63,7 @@
                         </div>
                         <div>
                             <strong>Visit Us</strong>
-                            <p>Thamel, Kathmandu, Nepal</p>
+                            <p>Informatics College Pokhara, Bagar, Pokhara-8, Kaski, Nepal</p>
                         </div>
                     </li>
                     <li class="info-item">
@@ -70,7 +72,7 @@
                         </div>
                         <div>
                             <strong>Call Us</strong>
-                            <p>+977 01-4XXXXXX</p>
+                            <p>9000000000</p>
                         </div>
                     </li>
                     <li class="info-item">
@@ -79,7 +81,7 @@
                         </div>
                         <div>
                             <strong>Email Us</strong>
-                            <p>hello@mithocha.com.np</p>
+                            <p>mithocha@gmail.com</p>
                         </div>
                     </li>
                     <li class="info-item">
@@ -179,8 +181,8 @@
         </div>
         <div class="map-frame">
             <iframe
-                title="Informatics College Pokhara location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.0!2d83.9856!3d28.2096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3995937bbf0376ff%3A0x6f2a8d5e3c1b4a2d!2sInformatics%20College%20Pokhara!5e0!3m2!1sen!2snp!4v1714900000000!5m2!1sen!2snp"
+                title="Informatics College Pokhara Matepani location"
+                src="https://maps.google.com/maps?q=Informatics+College+Pokhara+Matepani&t=m&z=16&output=embed&iwloc=near"
                 width="100%"
                 height="420"
                 style="border:0;border-radius:20px;display:block;"
@@ -208,7 +210,7 @@
             </details>
             <details class="faq-item">
                 <summary>Do you offer bulk or corporate orders?</summary>
-                <p>Yes! Contact us at hello@mithocha.com.np for bulk orders, events, or corporate packages.</p>
+                <p>Yes! Contact us at mithocha@gmail.com for bulk orders, events, or corporate packages.</p>
             </details>
             <details class="faq-item">
                 <summary>What payment methods do you accept?</summary>
@@ -253,5 +255,6 @@
     </div>
 </footer>
 
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 </body>
 </html>

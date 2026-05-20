@@ -34,12 +34,14 @@
         <div style="display:flex;align-items:center;gap:8px;">
             <a class="nav-icon cart-icon" href="${pageContext.request.contextPath}/cart" aria-label="Shopping Cart">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
@@ -70,14 +72,20 @@
         </div>
         <% } %>
 
-        <%-- ── Product count ── --%>
+        <%-- ── Product count + Search ── --%>
         <% if (products != null && !products.isEmpty()) { %>
-        <p class="results-count">
-            <span><%= products.size() %> drink<%= products.size() != 1 ? "s" : "" %></span>
-            <% if (selectedCategory != null && !selectedCategory.trim().isEmpty()) { %>
-                in <strong><%= ValidationUtil.sanitise(selectedCategory) %></strong>
-            <% } %>
-        </p>
+        <div class="results-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <p class="results-count" style="margin:0;">
+                <span><%= products.size() %> drink<%= products.size() != 1 ? "s" : "" %></span>
+                <% if (selectedCategory != null && !selectedCategory.trim().isEmpty()) { %>
+                    in <strong><%= ValidationUtil.sanitise(selectedCategory) %></strong>
+                <% } %>
+            </p>
+            <div class="search-bar" style="display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined">search</span>
+                <input id="productSearch" type="text" placeholder="Search menu by name or category…" oninput="filterProductCards()" style="padding:8px;border-radius:8px;border:1px solid #e8dbd7;min-width:220px;">
+            </div>
+        </div>
         <% } %>
 
         <% if (products == null || products.isEmpty()) { %>
@@ -189,15 +197,27 @@
 </footer>
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 <script>
     (function () {
         const store = window.MithoChaStorefront;
+        if (!store) {
+            try { console.error('MithoChaStorefront not loaded on this page — quick-add disabled'); } catch(e){}
+            return;
+        }
+        const contextPath = '<%= contextPath %>';
+        const loggedIn = <%= loggedInUser != null ? "true" : "false" %>;
         const fallbackSizes = [
             { label: "Regular", extra: 0, meta: "500ml" }
         ];
 
         document.querySelectorAll(".quick-cart-button").forEach(function (button) {
             button.addEventListener("click", function () {
+                if (!loggedIn) {
+                    window.location.href = contextPath + '/login';
+                    return;
+                }
+
                 const card = button.closest(".product-card-body");
                 const sizes = store.parseProductOptions(card.dataset.productSizes, fallbackSizes);
                 const flavours = store.parseProductOptions(card.dataset.productFlavours, []);
@@ -235,16 +255,28 @@
                     optionsSummary: optionsSummary
                 });
 
-                /* visual feedback */
-                const orig = button.innerHTML;
-                button.innerHTML = '<span class="material-symbols-outlined">check</span> Added!';
+                /* visual feedback then redirect to cart after 800ms */
+                button.innerHTML = '<span class="material-symbols-outlined">check<\/span> Added!';
                 button.style.background = '#2f7d32';
+                button.disabled = true;
                 window.setTimeout(function () {
-                    button.innerHTML = orig;
-                    button.style.background = '';
-                }, 1400);
+                    window.location.href = contextPath + '/cart';
+                }, 800);
             });
         });
+
+            function filterProductCards() {
+                var q = (document.getElementById('productSearch') && document.getElementById('productSearch').value || '').toLowerCase().trim();
+                var cards = document.querySelectorAll('.product-card');
+                cards.forEach(function(card){
+                    var body = card.querySelector('.product-card-body') || card;
+                    var name = (body && body.dataset.productName || '').toLowerCase();
+                    var category = (body && body.dataset.productCategory || '').toLowerCase();
+                    var desc = (body && body.dataset.productDescription || '').toLowerCase();
+                    var show = !q || name.indexOf(q) !== -1 || category.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+                    card.style.display = show ? '' : 'none';
+                });
+            }
     })();
 </script>
 </body>

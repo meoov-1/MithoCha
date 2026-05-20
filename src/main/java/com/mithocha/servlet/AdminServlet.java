@@ -1,5 +1,14 @@
 package com.mithocha.servlet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.mithocha.dao.OrderDAO;
 import com.mithocha.dao.ProductDAO;
 import com.mithocha.dao.UserDAO;
@@ -15,12 +24,11 @@ import com.mithocha.util.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 /**
  * AdminServlet – handles all /admin/* routes.
@@ -305,9 +313,17 @@ public class AdminServlet extends HttpServlet {
             throws IOException, ServletException {
         try {
             Product p = buildProductFromRequest(request, 0);
-            int id = productDAO.insertProduct(p);
-            if (id > 0) flash(request, "success", "Product \"" + p.getName() + "\" added successfully.");
-            else        flash(request, "error",   "Failed to add product. Please try again.");
+            // Prevent duplicates by name (case-insensitive)
+            List<Product> existing = productDAO.findAll();
+            boolean duplicate = existing.stream()
+                    .anyMatch(pr -> pr.getName() != null && pr.getName().trim().equalsIgnoreCase(p.getName() == null ? "" : p.getName().trim()));
+            if (duplicate) {
+                flash(request, "error", "Product \"" + p.getName() + "\" already exists.");
+            } else {
+                int id = productDAO.insertProduct(p);
+                if (id > 0) flash(request, "success", "Product \"" + p.getName() + "\" added successfully.");
+                else        flash(request, "error",   "Failed to add product. Please try again.");
+            }
         } catch (Exception e) {
             flash(request, "error", "Error adding product: " + e.getMessage());
         }

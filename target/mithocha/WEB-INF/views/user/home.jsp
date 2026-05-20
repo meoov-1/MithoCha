@@ -1,4 +1,6 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c"  uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +12,293 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/user/home.css">
+    <style>
+        /* ── Floating Cup — bare, no card ── */
+        .hero-cup-wrap {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 420px;
+            height: 540px;
+        }
+
+        .hero-cup-img {
+            position: relative;
+            z-index: 2;
+            width: 360px;
+            height: auto;
+            filter:
+                drop-shadow(0 40px 60px rgba(160, 90, 20, 0.50))
+                drop-shadow(0 12px 24px rgba(50, 23, 13, 0.28))
+                drop-shadow(0 -4px 18px rgba(220, 150, 60, 0.18));
+            animation: cup-float 3.8s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes cup-float {
+            0%,  100% { transform: translateY(0px) scale(1); }
+            50%        { transform: translateY(-22px) scale(1.012); }
+        }
+
+        /* Ambient warm glow behind the cup */
+        .hero-cup-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -55%);
+            width: 320px; height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                rgba(220, 140, 40, 0.22) 0%,
+                rgba(180, 100, 20, 0.10) 45%,
+                transparent 70%);
+            z-index: 1;
+            animation: glow-pulse 3.8s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%,  100% { opacity: 0.8; transform: translate(-50%,-55%) scale(1); }
+            50%        { opacity: 1;   transform: translate(-50%,-55%) scale(1.15); }
+        }
+
+        /* Ground shadow that breathes with the float */
+        .hero-cup-shadow {
+            position: absolute;
+            bottom: 4px; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(100, 60, 20, 0.30) 0%, transparent 70%);
+            animation: shadow-breathe 3.8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes shadow-breathe {
+            0%,  100% { width: 200px; opacity: 0.75; }
+            50%        { width: 150px; opacity: 0.28; }
+        }
+
+        /* ── Location / Map section — full-width, no card ── */
+        .location-section {
+            padding: 90px 0 0;
+            background: transparent;
+        }
+
+        .location-section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .location-section-header .page-tag { margin-bottom: 10px; }
+
+        .location-section-header h2 {
+            font-family: 'Noto Serif', serif;
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 700;
+            color: #32170d;
+            margin: 0 0 14px;
+            line-height: 1.2;
+        }
+
+        .location-section-header p {
+            color: #504440;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* Info strip — 3 columns above the map */
+        .location-info-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            margin-bottom: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(125,86,45,0.12);
+        }
+
+        .location-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 28px 28px;
+            background: transparent;
+            border-right: 1px solid rgba(125,86,45,0.12);
+            transition: background .2s;
+        }
+
+        .location-info-item:last-child { border-right: none; }
+        .location-info-item:hover { background: rgba(125,86,45,0.04); }
+
+        .location-info-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: rgba(125,86,45,0.10);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .location-info-icon .material-symbols-outlined {
+            font-size: 22px; color: #7d562d;
+        }
+
+        .location-info-text strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #32170d;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .location-info-text span {
+            font-size: 14px;
+            color: #504440;
+            line-height: 1.5;
+        }
+
+        /* Full-width map */
+        .map-full-wrap {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            height: 460px;
+            box-shadow: 0 24px 64px rgba(50,23,13,0.13), 0 4px 16px rgba(50,23,13,0.07);
+        }
+
+        .map-full-wrap iframe {
+            width: 100%; height: 100%;
+            border: none; display: block;
+        }
+
+        .map-overlay-badge {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: #32170d;
+            color: #fff8f6;
+            border-radius: 999px;
+            padding: 8px 18px 8px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 6px 20px rgba(50,23,13,0.30);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .map-overlay-badge .material-symbols-outlined { font-size: 18px; color: #e8a040; }
+
+        .map-directions-btn {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            background: #32170d;
+            color: #fff8f6;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 6px 20px rgba(50,23,13,0.30);
+            z-index: 10;
+            text-decoration: none;
+            transition: filter .2s;
+        }
+
+        .map-directions-btn:hover { filter: brightness(1.15); }
+        .map-directions-btn .material-symbols-outlined { font-size: 18px; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .location-info-strip { grid-template-columns: 1fr 1fr; }
+            .location-info-item:nth-child(2) { border-right: none; }
+            .location-info-item:nth-child(3) {
+                border-right: none;
+                border-top: 1px solid rgba(125,86,45,0.12);
+                grid-column: 1 / -1;
+            }
+            .map-full-wrap { height: 340px; }
+        }
+
+        @media (max-width: 600px) {
+            .location-info-strip { grid-template-columns: 1fr; border-radius: 16px; }
+            .location-info-item { border-right: none; border-bottom: 1px solid rgba(125,86,45,0.12); }
+            .location-info-item:last-child { border-bottom: none; border-top: none; }
+            .location-info-item:nth-child(2) { border-right: none; }
+            .location-info-item:nth-child(3) { border-top: none; grid-column: auto; }
+            .map-full-wrap { height: 280px; border-radius: 16px; }
+            .map-overlay-badge { font-size: 11px; padding: 6px 12px 6px 9px; }
+            .map-directions-btn { font-size: 12px; padding: 8px 14px; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-cup-wrap  { width: 280px; height: 360px; }
+            .hero-cup-img   { width: 240px; }
+        }
+
+        /* ── Logout popup ── */
+        .logout-popup-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(39,24,20,0.45);
+            backdrop-filter: blur(4px);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+        }
+        .logout-popup-overlay.open { display: flex; }
+        .logout-popup {
+            background: #fff;
+            border-radius: 20px;
+            padding: 36px 32px 28px;
+            width: min(380px, calc(100vw - 40px));
+            box-shadow: 0 24px 60px rgba(39,24,20,0.22);
+            text-align: center;
+            animation: popup-in .22s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes popup-in {
+            from { transform: scale(.88); opacity: 0; }
+            to   { transform: scale(1);  opacity: 1; }
+        }
+        .logout-popup .popup-icon {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #fff1ed; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 16px;
+        }
+        .logout-popup .popup-icon .material-symbols-outlined {
+            font-size: 30px; color: #ba1a1a;
+        }
+        .logout-popup h3 {
+            font-family: 'Noto Serif', serif;
+            font-size: 20px; font-weight: 700;
+            color: #32170d; margin-bottom: 8px;
+        }
+        .logout-popup p {
+            font-size: 14px; color: #504440; margin-bottom: 24px; line-height: 1.6;
+        }
+        .logout-popup-btns {
+            display: flex; gap: 10px;
+        }
+        .logout-popup-btns .btn-cancel-logout {
+            flex: 1; padding: 12px; border: 1.5px solid #d5c3bd;
+            border-radius: 10px; background: transparent;
+            color: #504440; font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+        }
+        .logout-popup-btns .btn-confirm-logout {
+            flex: 1; padding: 12px; border: none;
+            border-radius: 10px; background: #ba1a1a;
+            color: #fff; font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .logout-popup-btns .btn-confirm-logout:hover { filter: brightness(1.1); }
+    </style>
 </head>
 <body>
 
@@ -28,10 +317,12 @@
                 <span class="material-symbols-outlined">shopping_cart</span>
                 <span class="cart-count" id="cartCount"></span>
             </a>
-            <a class="nav-icon" href="${pageContext.request.contextPath}/logout" aria-label="Logout" title="Logout"
-               style="color:#ba1a1a;" onclick="return confirm('Log out of MithoCha?')">
+            <button class="nav-icon logout-trigger" 
+                    data-logout-url="${pageContext.request.contextPath}/logout"
+                    aria-label="Logout" title="Logout"
+                    style="color:#ba1a1a;background:none;border:none;cursor:pointer;">
                 <span class="material-symbols-outlined">logout</span>
-            </a>
+            </button>
         </div>
     </div>
 </header>
@@ -51,15 +342,12 @@
         </div>
 
         <div class="hero-image-wrap">
-            <img class="hero-image"
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZrGNHM-JSrZ_-EjQi0OE19cCc7gMWzcDxsbuq4KfoTE7CtfKH5v9F2rLZXPMtAlkDMkFtxfZICYUWw_eIZ6LfISL9yvx2lNmx3olN6xdIeoH7K3Ee_K5Tz3yjZ432htCEc0WCNTCzV6LUYOFfsEs_J9k4X5j8M3lhBvZO4l85-hcR2R7Xx_rJUWQby4784tXie9wCktgeXSgu6aYRS8vPAfYlZ_R_7ZsDB-By-QVoD3UfnsEtSOQIv-6WTnDHaQs7WFJ_snolrQ2"
-                 alt="MithoCha signature bubble tea" width="520" height="624">
-            <div class="hero-floating-card">
-                <span class="material-symbols-outlined">coffee</span>
-                <div>
-                    <strong>Freshly brewed</strong>
-                    <p>Floral, nutty, and creamy notes in every sip.</p>
-                </div>
+            <div class="hero-cup-wrap">
+                <div class="hero-cup-glow"></div>
+                <img class="hero-cup-img"
+                     src="${pageContext.request.contextPath}/assets/images/Bubble_tea__1_-removebg-preview.png"
+                     alt="MithoCha bubble tea with boba and straw">
+                <div class="hero-cup-shadow"></div>
             </div>
         </div>
     </section>
@@ -106,59 +394,46 @@
         </div>
 
         <div class="menu-grid">
-            <%-- Card 1 — Gud-Caramel Butterscotch (featured/large) --%>
-            <article class="menu-card menu-card-large">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYZrGNHM-JSrZ_-EjQi0OE19cCc7gMWzcDxsbuq4KfoTE7CtfKH5v9F2rLZXPMtAlkDMkFtxfZICYUWw_eIZ6LfISL9yvx2lNmx3olN6xdIeoH7K3Ee_K5Tz3yjZ432htCEc0WCNTCzV6LUYOFfsEs_J9k4X5j8M3lhBvZO4l85-hcR2R7Xx_rJUWQby4784tXie9wCktgeXSgu6aYRS8vPAfYlZ_R_7ZsDB-By-QVoD3UfnsEtSOQIv-6WTnDHaQs7WFJ_snolrQ2"
-                     alt="Gud-Caramel Butterscotch bubble tea" width="620" height="380" loading="lazy">
-                <button class="image-order-button" type="button"
-                        data-name="Gud-Caramel Butterscotch"
-                        data-price="350"
-                        data-description="A rich, jaggery-infused butterscotch blend that captures the warmth of traditional Nepali sweetness.">
-                    <span class="material-symbols-outlined">add_shopping_cart</span>
-                    Order Now
-                </button>
-                <div class="menu-card-body">
-                    <p class="menu-tag">Bestseller</p>
-                    <h3>Gud-Caramel Butterscotch</h3>
-                    <p>A rich, jaggery-infused butterscotch blend that captures the warmth of traditional Nepali sweetness.</p>
+            <%-- Dynamic: first 3 products from DB via DashboardServlet --%>
+            <c:choose>
+              <c:when test="${not empty featuredProducts}">
+                <c:forEach var="p" items="${featuredProducts}" varStatus="st">
+                  <article class="menu-card ${st.first ? 'menu-card-large' : ''}">
+                    <c:choose>
+                      <c:when test="${not empty p.imageUrl}">
+                        <img src="${p.imageUrl}" alt="${p.name}" loading="lazy">
+                      </c:when>
+                      <c:otherwise>
+                        <div style="width:100%;height:220px;background:#fff1ed;display:flex;align-items:center;justify-content:center;">
+                          <span class="material-symbols-outlined" style="font-size:48px;color:#d5c3bd;">local_cafe</span>
+                        </div>
+                      </c:otherwise>
+                    </c:choose>
+                    <button class="image-order-button" type="button"
+                            data-id="${p.productId}"
+                            data-name="${fn:escapeXml(p.name)}"
+                            data-price="${p.basePrice}"
+                            data-category="${fn:escapeXml(p.category)}"
+                            data-description="${fn:escapeXml(p.description)}">
+                        <span class="material-symbols-outlined">add_shopping_cart</span>
+                        Order Now
+                    </button>
+                    <div class="menu-card-body">
+                        <p class="menu-tag">${p.category}</p>
+                        <h3>${p.name}</h3>
+                        <p>${p.description}</p>
+                    </div>
+                  </article>
+                </c:forEach>
+              </c:when>
+              <c:otherwise>
+                <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#a08070;">
+                  <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:12px;">local_cafe</span>
+                  <p style="font-size:16px;margin-bottom:16px;">Our menu is being prepared — check back soon!</p>
+                  <a href="${pageContext.request.contextPath}/products" class="btn-outline">Browse All Drinks</a>
                 </div>
-            </article>
-
-            <%-- Card 2 — Dark Chocolate --%>
-            <article class="menu-card">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBquX2fNKHlLm4aGMoIl5OqewCbVzo7BJDy19gbdy2Ln-en1dklix1Ih2kfAWeSbVhSA6J_kn1hsGEEVw_qFl-QZNN0Md4DwIX9Sx4zMNkHrFeitnutGAQTMJxW9TJl9Xc3P3rbm_qCkVI3J_gEqG5q-3X0UqobxtPHei962zde8ElnRyawz1spQALNeqLOawkrAc-OE6MXjTfddoh10SokxQ-b6IGsvZbc3m6KWNQZ4a1Qjcq6S-AiOg3l60fMoE-oMv13HFSMPIdo"
-                     alt="Dark Chocolate bubble tea" width="380" height="250" loading="lazy">
-                <button class="image-order-button" type="button"
-                        data-name="Dark Chocolate"
-                        data-price="380"
-                        data-description="Deep cocoa layers met with fresh Himalayan milk for an intense, velvety chocolate escape.">
-                    <span class="material-symbols-outlined">add_shopping_cart</span>
-                    Order Now
-                </button>
-                <div class="menu-card-body">
-                    <p class="menu-tag">Bold &amp; Indulgent</p>
-                    <h3>Dark Chocolate</h3>
-                    <p>Deep cocoa layers met with fresh Himalayan milk for an intense, velvety chocolate escape.</p>
-                </div>
-            </article>
-
-            <%-- Card 3 — Red Strawberry --%>
-            <article class="menu-card">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjKtMt-cGyRjuS3wBgvv9GGeZQg18oha7X_8eOHFae6vCPJjeh4fB4ROD2lOhGwSkucYk1HDc5wzBhWDNTltTAvFEwxzzcgDS2mjjKISVl-PxnnYJ4AWwgda-04CNuoaKlSKo2IcvmJAS5HM0Pex-vVwp-ndfz3B5N4Ay04jVEn5i6oMVl7BCP-2D9g5IHXFqULub4i1JTnch08XXber5QQW6jsuiS2bDB5nQYyf_V6DgU3QuG3Am0u_X52iO654WXwJvE8peSm2zT"
-                     alt="Red Strawberry bubble tea" width="380" height="250" loading="lazy">
-                <button class="image-order-button" type="button"
-                        data-name="Red Strawberry"
-                        data-price="400"
-                        data-description="Sun-ripened strawberries blended into a refreshing tea for a burst of crimson joy.">
-                    <span class="material-symbols-outlined">add_shopping_cart</span>
-                    Order Now
-                </button>
-                <div class="menu-card-body">
-                    <p class="menu-tag">Fruit Tea</p>
-                    <h3>Red Strawberry</h3>
-                    <p>Sun-ripened strawberries blended into a refreshing tea for a burst of crimson joy.</p>
-                </div>
-            </article>
+              </c:otherwise>
+            </c:choose>
         </div>
 
         <%-- "See more" row — always visible, links to full menu --%>
@@ -177,8 +452,70 @@
         </div>
     </section>
 
+    <%-- ── LOCATION / MAP — full width, no card, placed last ── --%>
+    <section class="location-section">
+        <div class="container">
 
+            <div class="location-section-header">
+                <p class="page-tag">Find Us</p>
+                <h2>Come visit us in Pokhara</h2>
+                <p>We're right at Informatics College Pokhara, Matepani — easy to find, impossible to miss the aroma. Drop by between classes or after a long day.</p>
+            </div>
 
+            <%-- Info strip: 3 columns, no card background ── --%>
+            <div class="location-info-strip">
+                <div class="location-info-item">
+                    <div class="location-info-icon">
+                        <span class="material-symbols-outlined">location_on</span>
+                    </div>
+                    <div class="location-info-text">
+                        <strong>Address</strong>
+                        <span>Informatics College Pokhara<br>Matepani, Pokhara, Nepal</span>
+                    </div>
+                </div>
+                <div class="location-info-item">
+                    <div class="location-info-icon">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                    <div class="location-info-text">
+                        <strong>Open Hours</strong>
+                        <span>Sun – Fri &nbsp;·&nbsp; 9:00 AM – 7:00 PM</span>
+                    </div>
+                </div>
+                <div class="location-info-item">
+                    <div class="location-info-icon">
+                        <span class="material-symbols-outlined">phone</span>
+                    </div>
+                    <div class="location-info-text">
+                        <strong>Contact</strong>
+                        <span>9000000000<br>mithocha@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Full-width map — Google Maps pinned to Informatics College Pokhara Matepani ── --%>
+            <div class="map-full-wrap">
+                <div class="map-overlay-badge">
+                    <span class="material-symbols-outlined">location_on</span>
+                    MithoCha · Informatics College Pokhara, Matepani
+                </div>
+                <iframe
+                    src="https://maps.google.com/maps?q=Informatics+College+Pokhara+Matepani&t=m&z=16&output=embed&iwloc=near"
+                    title="Informatics College Pokhara Matepani"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+                <a class="map-directions-btn"
+                   href="https://maps.google.com/?q=Informatics+College+Pokhara+Matepani"
+                   target="_blank" rel="noopener">
+                    <span class="material-symbols-outlined">directions</span>
+                    Get Directions
+                </a>
+            </div>
+
+        </div>
+    </section>
 
 </main>
 
@@ -224,30 +561,54 @@
 
 <script src="${pageContext.request.contextPath}/js/user/storefront.js"></script>
 <script>
+    /* Server-side values injected by JSP */
+    var _mithocha = {
+        isLoggedIn: <%= com.mithocha.util.SessionUtil.isLoggedIn(request) ? "true" : "false" %>,
+        loginUrl:   "<%= request.getContextPath() %>/login",
+        cartUrl:    "<%= request.getContextPath() %>/cart"
+    };
+</script>
+<script>
     /* ── Home page "Order Now" buttons → add to cart ── */
-    (function () {
+    document.addEventListener("DOMContentLoaded", function () {
         var store = window.MithoChaStorefront;
+        if (!store) {
+            console.error("MithoChaStorefront not loaded");
+            return;
+        }
+
+        var isLoggedIn = _mithocha.isLoggedIn;
+        var loginUrl   = _mithocha.loginUrl;
+        var cartUrl    = _mithocha.cartUrl;
 
         document.querySelectorAll(".image-order-button").forEach(function (btn) {
             btn.addEventListener("click", function () {
+                if (!isLoggedIn) {
+                    window.location.href = loginUrl;
+                    return;
+                }
+
                 var name        = btn.dataset.name        || "Bubble Tea";
                 var price       = parseFloat(btn.dataset.price) || 0;
                 var description = btn.dataset.description || "";
                 var imageUrl    = "";
 
-                /* grab the nearest img inside the same article */
                 var card = btn.closest("article");
                 if (card) {
                     var img = card.querySelector("img");
-                    if (img) imageUrl = img.src;
+                    // Prefer dataset productImage (SSR-provided), then data-src (lazy-loaded), then src
+                    imageUrl = card.dataset.productImage || "";
+                    if (!imageUrl && img) {
+                        imageUrl = img.getAttribute('data-src') || img.src || "";
+                    }
                 }
 
-                store.addCartItem({
-                    productId:      0,
+                var item = {
+                    productId:      parseInt(btn.dataset.id) || 0,
                     name:           name,
                     imageUrl:       imageUrl,
                     description:    description,
-                    category:       "Signature",
+                    category:       btn.dataset.category || "Signature",
                     basePrice:      price,
                     unitPrice:      price,
                     quantity:       1,
@@ -256,22 +617,21 @@
                     topping:        "",
                     iceLevel:       "Regular Ice",
                     sugarLevel:     "50%",
-                    optionsSummary: "Regular • 50% Sugar • Regular Ice"
-                });
+                    optionsSummary: "Regular \u2022 50% Sugar \u2022 Regular Ice"
+                };
 
-                /* visual feedback */
-                var original = btn.innerHTML;
-                btn.innerHTML = '<span class="material-symbols-outlined">check</span> Added!';
-                btn.style.background = "var(--secondary)";
+                store.addCartItem(item);
+                store.updateCartCount();
+
+                /* visual feedback then redirect to cart */
+                btn.innerHTML = '<span class="material-symbols-outlined">check<\/span> Added!';
+                btn.style.background = "#7d562d";
                 btn.style.color = "#fff";
-                setTimeout(function () {
-                    btn.innerHTML = original;
-                    btn.style.background = "";
-                    btn.style.color = "";
-                }, 1400);
+                btn.disabled = true;
             });
         });
-    })();
+    });
 </script>
+<script src="${pageContext.request.contextPath}/js/logout-popup.js"></script>
 </body>
 </html>

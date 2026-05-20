@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c"  uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,7 +120,11 @@
       <a href="${pageContext.request.contextPath}/admin/billing"   class="nav-item"><span class="material-symbols-outlined">payments</span>Billing</a>
     </nav>
     <div class="sidebar-footer">
-      <a href="${pageContext.request.contextPath}/logout" class="nav-item"><span class="material-symbols-outlined">logout</span>Logout</a>
+      <button class="nav-item logout-trigger" 
+              data-logout-url="${pageContext.request.contextPath}/logout"
+              style="background:none;border:none;cursor:pointer;width:100%;text-align:left;color:inherit;font-family:inherit;font-size:inherit;">
+          <span class="material-symbols-outlined">logout</span>Logout
+      </button>
     </div>
   </aside>
 
@@ -260,7 +265,7 @@
               <button type="button" class="btn-primary" onclick="submitProductForm('addForm','addSizeRows','addToppingRows','addFlavourRows','addSizesJson','addToppingsJson','addFlavoursJson')">
                 <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>Add Product
               </button>
-              <button type="reset" class="btn-secondary" onclick="clearRows('addSizeRows','addToppingRows','addFlavourRows')">
+              <button type="reset" class="btn-secondary" onclick="clearRows()">
                 <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>Reset
               </button>
             </div>
@@ -325,20 +330,18 @@
                       <td>
                         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
 
-                          <%-- Edit button → opens modal --%>
-                          <button type="button" class="btn-primary btn-sm"
-                                  onclick="openEditModal(
-                                    ${product.productId},
-                                    '${product.name.replace("'","\\'")}',
-                                    '${product.category}',
-                                    '${product.description != null ? product.description.replace("'","\\'").replace(chr(10)," ") : ""}',
-                                    '${product.imageUrl != null ? product.imageUrl : ""}',
-                                    '${product.basePrice}',
-                                    ${product.sizes    != null ? "'" += product.sizes.replace("'","\\'")    += "'" : "null"},
-                                    ${product.flavours != null ? "'" += product.flavours.replace("'","\\'") += "'" : "null"},
-                                    ${product.toppings != null ? "'" += product.toppings.replace("'","\\'") += "'" : "null"},
-                                    ${product.available}
-                                  )">
+                          <%-- Edit button → opens modal via data attributes (safe, no EL escaping issues) --%>
+                          <button type="button" class="btn-primary btn-sm btn-edit-product"
+                                  data-id="${product.productId}"
+                                  data-name="${fn:escapeXml(product.name)}"
+                                  data-category="${fn:escapeXml(product.category)}"
+                                  data-desc="${fn:escapeXml(product.description)}"
+                                  data-image="${fn:escapeXml(product.imageUrl)}"
+                                  data-price="${product.basePrice}"
+                                  data-sizes="${fn:escapeXml(product.sizes)}"
+                                  data-flavours="${fn:escapeXml(product.flavours)}"
+                                  data-toppings="${fn:escapeXml(product.toppings)}"
+                                  data-available="${product.available}">
                             <span class="material-symbols-outlined" style="font-size:15px;">edit</span>Edit
                           </button>
 
@@ -552,6 +555,9 @@
     ['addSizeRows','addToppingRows','addFlavourRows'].forEach(function(id) {
       document.getElementById(id).innerHTML = '';
     });
+    // also reset the image preview
+    var prev = document.getElementById('addImgPreview');
+    if (prev) { prev.src = ''; prev.classList.remove('visible'); }
   }
 
   /* Collect rows → JSON string */
@@ -598,20 +604,31 @@
     document.getElementById(sizesJsonId).value    = rowsToJson(sizeRowsId,    'size');
     document.getElementById(toppingsJsonId).value = rowsToJson(toppingRowsId, 'topping');
     document.getElementById(flavoursJsonId).value = rowsToJson(flavourRowsId, 'flavour');
+    // Client-side duplicate prevention for add form
+    if (formId === 'addForm') {
+      var nameEl = document.getElementById('addName');
+      var name = nameEl ? nameEl.value.trim().toLowerCase() : '';
+      if (name && _existingProductNames.indexOf(name) !== -1) {
+        alert('A product with this name already exists. Please choose a different name or edit the existing product.');
+        nameEl.focus();
+        return;
+      }
+    }
     document.getElementById(formId).submit();
   }
 
   /* ═══════════════════════════════════════════════════════
      ADD FORM TOGGLE
   ═══════════════════════════════════════════════════════ */
+  var _addFormOpen = false;
   function toggleAddForm() {
+    _addFormOpen = !_addFormOpen;
     var form  = document.getElementById('addProductForm');
     var icon  = document.getElementById('addIcon');
     var label = document.getElementById('addLabel');
-    var open  = form.style.display === 'none' || form.style.display === '';
-    form.style.display = open ? 'block' : 'none';
-    icon.textContent   = open ? 'expand_less' : 'add';
-    label.textContent  = open ? 'Hide Form'   : 'Show Form';
+    form.style.display = _addFormOpen ? 'block' : 'none';
+    icon.textContent   = _addFormOpen ? 'expand_less' : 'add';
+    label.textContent  = _addFormOpen ? 'Hide Form'   : 'Show Form';
   }
 
   /* ═══════════════════════════════════════════════════════
@@ -633,8 +650,19 @@
   }
 
   /* ═══════════════════════════════════════════════════════
-     EDIT MODAL
+     EDIT MODAL — wired via data-* attributes (no EL escaping issues)
   ═══════════════════════════════════════════════════════ */
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.btn-edit-product');
+    if (!btn) return;
+    var d = btn.dataset;
+    openEditModal(
+      d.id, d.name, d.category, d.desc,
+      d.image, d.price, d.sizes, d.flavours, d.toppings,
+      d.available === 'true'
+    );
+  });
+
   function openEditModal(id, name, category, description, imageUrl, basePrice, sizesJson, flavoursJson, toppingsJson, available) {
     document.getElementById('editProductId').value   = id;
     document.getElementById('editName').value        = name;
@@ -679,6 +707,13 @@
     var countEl = document.getElementById('productCount');
     if (countEl) countEl.textContent = rows.length + ' product(s)';
   });
+
+  /* Existing product names (for duplicate prevention) */
+  var _existingProductNames = [];
+  (function(){
+    var rows = document.querySelectorAll('.product-row');
+    rows.forEach(function(r){ if (r.dataset && r.dataset.name) _existingProductNames.push(r.dataset.name.trim().toLowerCase()); });
+  })();
 </script>
 </body>
 </html>
