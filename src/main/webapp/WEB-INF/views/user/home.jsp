@@ -1,4 +1,4 @@
-﻿v<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c"  uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
@@ -436,20 +436,6 @@
             </c:choose>
         </div>
 
-        <%-- "See more" row — always visible, links to full menu --%>
-        <div class="see-more-row">
-            <div class="see-more-dots">
-                <span></span><span></span><span></span>
-            </div>
-            <a class="see-more-link" href="${pageContext.request.contextPath}/products">
-                <span class="material-symbols-outlined">restaurant_menu</span>
-                See all drinks
-                <span class="material-symbols-outlined">chevron_right</span>
-            </a>
-            <div class="see-more-dots">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
     </section>
 
     <%-- ── LOCATION / MAP — full width, no card, placed last ── --%>

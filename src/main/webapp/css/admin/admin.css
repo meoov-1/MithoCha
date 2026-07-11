@@ -314,6 +314,11 @@ input, select, textarea {
   color: #9c27b0;
 }
 
+.stat-icon.reviews {
+  background: rgba(255, 193, 7, 0.12);
+  color: #ffb300;
+}
+
 .stat-value {
   font-family: 'Noto Serif', serif;
   font-size: 32px;

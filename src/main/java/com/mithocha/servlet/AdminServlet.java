@@ -11,12 +11,15 @@ import java.util.stream.Collectors;
 
 import com.mithocha.dao.OrderDAO;
 import com.mithocha.dao.ProductDAO;
+import com.mithocha.dao.ReviewDAO;
 import com.mithocha.dao.UserDAO;
 import com.mithocha.dao.impl.OrderDAOImpl;
 import com.mithocha.dao.impl.ProductDAOImpl;
+import com.mithocha.dao.impl.ReviewDAOImpl;
 import com.mithocha.dao.impl.UserDAOImpl;
 import com.mithocha.model.Order;
 import com.mithocha.model.Product;
+import com.mithocha.model.Review;
 import com.mithocha.model.User;
 import com.mithocha.util.SessionUtil;
 import com.mithocha.util.ValidationUtil;
@@ -40,6 +43,8 @@ import jakarta.servlet.http.Part;
  * POST /admin/menu            action=add | action=edit | action=delete | action=toggle
  * GET  /admin/customers
  * POST /admin/customers       action=delete
+ * GET  /admin/reviews
+ * POST /admin/reviews         action=delete
  * GET  /admin/inventory
  * GET  /admin/analytics
  * GET  /admin/billing
@@ -55,6 +60,7 @@ public class AdminServlet extends HttpServlet {
 
     private final OrderDAO   orderDAO   = new OrderDAOImpl();
     private final ProductDAO productDAO = new ProductDAOImpl();
+    private final ReviewDAO  reviewDAO  = new ReviewDAOImpl();
     private final UserDAO    userDAO    = new UserDAOImpl();
 
     // ── GET ───────────────────────────────────────────────────────────────────
@@ -81,6 +87,7 @@ public class AdminServlet extends HttpServlet {
             case "/orders":     showOrders(request, response);     break;
             case "/menu":       showMenu(request, response);       break;
             case "/customers":  showCustomers(request, response);  break;
+            case "/reviews":    showReviews(request, response);    break;
             case "/inventory":  showInventory(request, response);  break;
             case "/analytics":  showAnalytics(request, response);  break;
             case "/billing":    showBilling(request, response);    break;
@@ -130,6 +137,11 @@ public class AdminServlet extends HttpServlet {
                 else { flash(request, "error", "Unknown customer action."); response.sendRedirect(request.getContextPath() + "/admin/customers"); }
                 break;
 
+            case "/reviews":
+                if ("delete".equals(action)) handleDeleteReview(request, response);
+                else { flash(request, "error", "Unknown review action."); response.sendRedirect(request.getContextPath() + "/admin/reviews"); }
+                break;
+
             case "/billing":
                 if ("markPaid".equals(action)) handleMarkOrderPaid(request, response, "/admin/billing");
                 else { flash(request, "error", "Unknown billing action."); response.sendRedirect(request.getContextPath() + "/admin/billing"); }
@@ -148,6 +160,7 @@ public class AdminServlet extends HttpServlet {
         List<Order>   allOrders   = orderDAO.findAll();
         List<Product> allProducts = productDAO.findAll();
         List<User>    allUsers    = userDAO.findAll();
+        List<Review>  allReviews  = reviewDAO.findAll();
 
         BigDecimal totalRevenue = allOrders.stream()
                 .filter(this::isRevenueOrder).map(Order::getTotalAmount)
@@ -157,7 +170,9 @@ public class AdminServlet extends HttpServlet {
         request.setAttribute("totalRevenue",        totalRevenue);
         request.setAttribute("totalCustomers",      (int) allUsers.stream().filter(u -> "customer".equals(u.getRole())).count());
         request.setAttribute("totalProducts",       allProducts.size());
+        request.setAttribute("totalReviews",        allReviews.size());
         request.setAttribute("recentOrders",        allOrders.stream().limit(10).collect(Collectors.toList()));
+        request.setAttribute("recentReviews",       allReviews.stream().limit(5).collect(Collectors.toList()));
         request.setAttribute("unavailableProducts", allProducts.stream().filter(p -> !p.isAvailable()).collect(Collectors.toList()));
 
         request.getRequestDispatcher("/WEB-INF/views/admin/admin-dashboard.jsp").forward(request, response);
@@ -385,6 +400,24 @@ public class AdminServlet extends HttpServlet {
             flash(request, "error", "Invalid user ID.");
         }
         response.sendRedirect(request.getContextPath() + "/admin/customers");
+    }
+
+    private void handleDeleteReview(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int reviewId = Integer.parseInt(request.getParameter("reviewId"));
+            if (reviewDAO.deleteReview(reviewId)) flash(request, "success", "Review #" + reviewId + " deleted.");
+            else                                  flash(request, "error",   "Failed to delete review.");
+        } catch (NumberFormatException e) {
+            flash(request, "error", "Invalid review ID.");
+        }
+        response.sendRedirect(request.getContextPath() + "/admin/reviews");
+    }
+
+    private void showReviews(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("reviews", reviewDAO.findAll());
+        request.getRequestDispatcher("/WEB-INF/views/admin/reviewmanagement.jsp").forward(request, response);
     }
 
     // ── HELPERS ───────────────────────────────────────────────────────────────

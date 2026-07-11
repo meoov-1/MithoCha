@@ -1,12 +1,16 @@
 package com.mithocha.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mithocha.dao.ReviewDAO;
 import com.mithocha.model.Review;
 import com.mithocha.util.DBUtil;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ReviewDAOImpl – JDBC implementation of ReviewDAO.
@@ -76,6 +80,24 @@ public class ReviewDAOImpl implements ReviewDAO {
             while (rs.next()) list.add(mapRow(rs));
         } catch (SQLException e) {
             System.err.println("[ReviewDAOImpl] findByUserId error: " + e.getMessage());
+        } finally {
+            DBUtil.close(conn);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Review> findAll() {
+        String sql = "SELECT * FROM reviews ORDER BY created_at DESC";
+        List<Review> list = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = DBUtil.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapRow(rs));
+        } catch (SQLException e) {
+            System.err.println("[ReviewDAOImpl] findAll error: " + e.getMessage());
         } finally {
             DBUtil.close(conn);
         }

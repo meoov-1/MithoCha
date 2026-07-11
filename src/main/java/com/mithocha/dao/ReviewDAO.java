@@ -1,7 +1,8 @@
 package com.mithocha.dao;
 
-import com.mithocha.model.Review;
 import java.util.List;
+
+import com.mithocha.model.Review;
 
 /**
  * ReviewDAO – contract for all review-related database operations.
@@ -16,6 +17,9 @@ public interface ReviewDAO {
 
     /** Return all reviews written by a specific user. */
     List<Review> findByUserId(int userId);
+
+    /** Return every review in the system. */
+    List<Review> findAll();
 
     /** Delete a review by id. */
     boolean deleteReview(int reviewId);

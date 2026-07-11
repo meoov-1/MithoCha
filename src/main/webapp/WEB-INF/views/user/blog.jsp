@@ -54,7 +54,7 @@
     <section class="section container">
         <article class="featured-post">
             <div class="featured-image-wrap">
-                <img src="${pageContext.request.contextPath}/assets/images/coffee-beans.jpg"
+                <img src="${pageContext.request.contextPath}/assets/Rich Dark Brown Coffee Scene_ Whole Beans, Dust, and Warm Aromas.jpg"
                      alt="Coffee beans and ground coffee" loading="lazy">
             </div>
             <div class="featured-body">
@@ -109,8 +109,8 @@
                 <p style="margin-top:12px;color:var(--muted);">Find us on Google Maps or send us a message — we're happy to answer questions about menu items and accessibility.</p>
             </div>
             <div style="flex:1;min-width:320px;">
-                <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-soft);">
-                    <img src="${pageContext.request.contextPath}/assets/images/cafe-interior.jpg" alt="Cafe interior and seating" style="width:100%;height:100%;object-fit:cover;display:block;">
+                <div class="visit-image-wrap">
+                    <img src="${pageContext.request.contextPath}/assets/images/download (6).jpg" alt="Cafe interior and seating">
                 </div>
             </div>
         </section>

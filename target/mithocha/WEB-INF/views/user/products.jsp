@@ -76,7 +76,7 @@
         <% if (products != null && !products.isEmpty()) { %>
         <div class="results-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <p class="results-count" style="margin:0;">
-                <span><%= products.size() %> drink<%= products.size() != 1 ? "s" : "" %></span>
+                <span id="productResultsCount"><%= products.size() %> drink<%= products.size() != 1 ? "s" : "" %></span>
                 <% if (selectedCategory != null && !selectedCategory.trim().isEmpty()) { %>
                     in <strong><%= ValidationUtil.sanitise(selectedCategory) %></strong>
                 <% } %>
@@ -264,20 +264,34 @@
                 }, 800);
             });
         });
-
-            function filterProductCards() {
-                var q = (document.getElementById('productSearch') && document.getElementById('productSearch').value || '').toLowerCase().trim();
-                var cards = document.querySelectorAll('.product-card');
-                cards.forEach(function(card){
-                    var body = card.querySelector('.product-card-body') || card;
-                    var name = (body && body.dataset.productName || '').toLowerCase();
-                    var category = (body && body.dataset.productCategory || '').toLowerCase();
-                    var desc = (body && body.dataset.productDescription || '').toLowerCase();
-                    var show = !q || name.indexOf(q) !== -1 || category.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
-                    card.style.display = show ? '' : 'none';
-                });
-            }
     })();
+</script>
+<script>
+    window.filterProductCards = function () {
+        var searchInput = document.getElementById('productSearch');
+        var query = ((searchInput && searchInput.value) || '').toLowerCase().trim();
+        var cards = document.querySelectorAll('.product-card');
+        var countEl = document.getElementById('productResultsCount');
+        var visible = 0;
+
+        cards.forEach(function(card) {
+            var body = card.querySelector('.product-card-body') || card;
+            var searchableText = [
+                card.textContent,
+                body.dataset.productName || '',
+                body.dataset.productCategory || '',
+                body.dataset.productDescription || ''
+            ].join(' ').toLowerCase();
+
+            var show = !query || searchableText.indexOf(query) !== -1;
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        if (countEl) {
+            countEl.textContent = visible + (visible === 1 ? ' drink' : ' drinks');
+        }
+    };
 </script>
 </body>
 </html>

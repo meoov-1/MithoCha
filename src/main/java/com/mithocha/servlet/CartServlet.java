@@ -4,6 +4,7 @@ import com.mithocha.dao.ProfileDAO;
 import com.mithocha.dao.impl.ProfileDAOImpl;
 import com.mithocha.model.User;
 import com.mithocha.service.CartService;
+import com.mithocha.util.CookieUtil;
 import com.mithocha.util.SessionUtil;
 
 import jakarta.servlet.ServletException;
@@ -74,11 +75,7 @@ public class CartServlet extends HttpServlet {
 
         if (orderId > 0) {
             // Clear the cart cookie on successful order
-            jakarta.servlet.http.Cookie cartCookie = new jakarta.servlet.http.Cookie("mithocha_cart", "");
-            cartCookie.setMaxAge(0);
-            cartCookie.setPath("/");
-            response.addCookie(cartCookie);
-
+            CookieUtil.clearCart(response);
             response.sendRedirect(request.getContextPath()
                     + "/profile?orderPlaced=true&orderId=" + orderId);
         } else {

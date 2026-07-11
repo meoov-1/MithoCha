@@ -50,6 +50,7 @@ D:\MithoCha\mithocha\src\main\java\com\mithocha\servlet\ProfileServlet.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\servlet\ViewServlet.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\util\ApiMapperUtil.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\util\ApiResponseUtil.java
+D:\MithoCha\mithocha\src\main\java\com\mithocha\util\CookieUtil.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\util\DBUtil.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\util\JsonUtil.java
 D:\MithoCha\mithocha\src\main\java\com\mithocha\util\JwtUtil.java

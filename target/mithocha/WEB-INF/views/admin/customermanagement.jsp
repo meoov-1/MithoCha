@@ -56,13 +56,6 @@
       </a>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="nav-item logout-trigger" 
-              data-logout-url="${pageContext.request.contextPath}/logout"
-              style="background:none;border:none;cursor:pointer;width:100%;text-align:left;color:inherit;font-family:inherit;font-size:inherit;">
-          <span class="material-symbols-outlined">logout</span>Logout
-      </button>
-    </div>
   </aside>
 
   <!-- ── Main ── -->
@@ -104,9 +97,9 @@
       </div>
 
       <!-- Search Bar -->
-      <div class="search-bar">
+      <div class="search-bar" role="search">
         <span class="material-symbols-outlined">search</span>
-        <input type="text" id="customerSearch" placeholder="Search by name, email, or user ID..." oninput="filterCustomers()">
+        <input type="search" id="customerSearch" placeholder="Search by name, email, role, or user ID..." autocomplete="off">
       </div>
 
       <!-- Customers Table Card -->
@@ -132,10 +125,7 @@
                 </thead>
                 <tbody>
                   <c:forEach var="user" items="${users}">
-                    <tr class="customer-row"
-                        data-userid="${user.userId}"
-                        data-name="${user.name}"
-                        data-email="${user.email}">
+                    <tr class="customer-row">
                       <td><strong>#${user.userId}</strong></td>
                       <td>
                         <div style="display:flex;align-items:center;gap:10px;">
@@ -187,15 +177,10 @@
               </table>
             </div>
 
-            <!-- Pagination placeholder -->
-            <div class="pagination">
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">
-                <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
-              </button>
+            <div id="customerNoResults" class="empty-state" style="display:none;">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No customers match your search.</p>
             </div>
-
           </c:when>
           <c:otherwise>
             <div class="empty-state">
@@ -211,26 +196,36 @@
 </div><!-- /admin-shell -->
 
 <script>
-  function filterCustomers() {
-    const query = document.getElementById('customerSearch').value.toLowerCase().trim();
-    const rows  = document.querySelectorAll('.customer-row');
-    let visible = 0;
-    rows.forEach(function(row) {
-      const userId = (row.dataset.userid || '').toLowerCase();
-      const name   = (row.dataset.name   || '').toLowerCase();
-      const email  = (row.dataset.email  || '').toLowerCase();
-      const match  = userId.includes(query) || name.includes(query) || email.includes(query);
-      row.style.display = match ? '' : 'none';
-      if (match) visible++;
-    });
-    const countEl = document.getElementById('customerCount');
-    if (countEl) countEl.textContent = visible + ' customer(s) shown';
-  }
-
   document.addEventListener('DOMContentLoaded', function() {
-    const rows = document.querySelectorAll('.customer-row');
+    const searchInput = document.getElementById('customerSearch');
+    const rows = Array.from(document.querySelectorAll('.customer-row'));
     const countEl = document.getElementById('customerCount');
-    if (countEl) countEl.textContent = rows.length + ' customer(s)';
+    const noResults = document.getElementById('customerNoResults');
+
+    function setCount(visible, total) {
+      if (!countEl) return;
+      countEl.textContent = visible === total
+        ? total + ' customer(s)'
+        : visible + ' of ' + total + ' customer(s) shown';
+    }
+
+    function filterCustomers() {
+      const query = (searchInput.value || '').toLowerCase().trim();
+      let visible = 0;
+
+      rows.forEach(function(row) {
+        const rowText = row.textContent.toLowerCase();
+        const match = !query || rowText.includes(query);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      setCount(visible, rows.length);
+      if (noResults) noResults.style.display = visible === 0 ? '' : 'none';
+    }
+
+    setCount(rows.length, rows.length);
+    if (searchInput) searchInput.addEventListener('input', filterCustomers);
   });
 </script>
 

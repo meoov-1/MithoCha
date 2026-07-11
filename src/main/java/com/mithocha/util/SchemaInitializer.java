@@ -36,6 +36,12 @@ public final class SchemaInitializer {
                 return;
             }
 
+            try {
+                ensureDatabase(url, username, password);
+            } catch (SQLException ex) {
+                throw new IllegalStateException("Database initialization failed.", ex);
+            }
+
             try (Connection conn = DriverManager.getConnection(url, username, password)) {
                 conn.setAutoCommit(false);
                 ensureUsersTable(conn);
@@ -47,6 +53,7 @@ public final class SchemaInitializer {
                 ensureOrdersTable(conn);
                 ensureOrderItemsTable(conn);
                 ensurePaymentsTable(conn);
+                ensureReviewsTable(conn);
                 migrateLegacyProducts(conn);
                 conn.commit();
                 initialised = true;
@@ -91,10 +98,26 @@ public final class SchemaInitializer {
                         + "CONSTRAINT fk_profile_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE"
                         + ")");
 
+        ensureColumn(conn, "profile", "phone",
+                "ALTER TABLE profile ADD COLUMN phone VARCHAR(20)");
+        ensureColumn(conn, "profile", "address",
+                "ALTER TABLE profile ADD COLUMN address TEXT");
+        ensureColumn(conn, "profile", "city",
+                "ALTER TABLE profile ADD COLUMN city VARCHAR(100)");
+        ensureColumn(conn, "profile", "postal_code",
+                "ALTER TABLE profile ADD COLUMN postal_code VARCHAR(20)");
+        ensureColumn(conn, "profile", "profile_image_url",
+                "ALTER TABLE profile ADD COLUMN profile_image_url VARCHAR(500)");
         ensureColumn(conn, "profile", "profile_image_data",
                 "ALTER TABLE profile ADD COLUMN profile_image_data LONGBLOB");
         ensureColumn(conn, "profile", "profile_image_content_type",
                 "ALTER TABLE profile ADD COLUMN profile_image_content_type VARCHAR(100)");
+        ensureColumn(conn, "profile", "cover_image_url",
+                "ALTER TABLE profile ADD COLUMN cover_image_url VARCHAR(500)");
+        ensureColumn(conn, "profile", "bio",
+                "ALTER TABLE profile ADD COLUMN bio TEXT");
+        ensureColumn(conn, "profile", "date_of_birth",
+                "ALTER TABLE profile ADD COLUMN date_of_birth DATE");
     }
 
     private static void ensureProductsTable(Connection conn) throws SQLException {
@@ -116,6 +139,33 @@ public final class SchemaInitializer {
                         + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                         + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
                         + ")");
+
+        ensureColumn(conn, "products", "description",
+                "ALTER TABLE products ADD COLUMN description TEXT");
+        ensureColumn(conn, "products", "image_url",
+                "ALTER TABLE products ADD COLUMN image_url VARCHAR(500)");
+        ensureColumn(conn, "products", "image_data",
+                "ALTER TABLE products ADD COLUMN image_data LONGBLOB");
+        ensureColumn(conn, "products", "image_content_type",
+                "ALTER TABLE products ADD COLUMN image_content_type VARCHAR(100)");
+        ensureColumn(conn, "products", "additional_images",
+                "ALTER TABLE products ADD COLUMN additional_images LONGTEXT");
+        ensureColumn(conn, "products", "category",
+                "ALTER TABLE products ADD COLUMN category VARCHAR(100)");
+        ensureColumn(conn, "products", "is_available",
+                "ALTER TABLE products ADD COLUMN is_available BOOLEAN NOT NULL DEFAULT TRUE");
+        ensureColumn(conn, "products", "sizes",
+                "ALTER TABLE products ADD COLUMN sizes LONGTEXT");
+        ensureColumn(conn, "products", "flavours",
+                "ALTER TABLE products ADD COLUMN flavours LONGTEXT");
+        ensureColumn(conn, "products", "toppings",
+                "ALTER TABLE products ADD COLUMN toppings LONGTEXT");
+        ensureColumn(conn, "products", "base_price",
+                "ALTER TABLE products ADD COLUMN base_price DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "products", "created_at",
+                "ALTER TABLE products ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        ensureColumn(conn, "products", "updated_at",
+                "ALTER TABLE products ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
     }
 
     private static void ensureProductSizesTable(Connection conn) throws SQLException {
@@ -129,6 +179,11 @@ public final class SchemaInitializer {
                         + "CONSTRAINT fk_product_sizes_product FOREIGN KEY (product_id) "
                         + "REFERENCES products(product_id) ON DELETE CASCADE"
                         + ")");
+
+        ensureColumn(conn, "product_sizes", "price_modifier",
+                "ALTER TABLE product_sizes ADD COLUMN price_modifier DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "product_sizes", "display_order",
+                "ALTER TABLE product_sizes ADD COLUMN display_order INT NOT NULL DEFAULT 0");
     }
 
     private static void ensureProductToppingsTable(Connection conn) throws SQLException {
@@ -142,6 +197,11 @@ public final class SchemaInitializer {
                         + "CONSTRAINT fk_product_toppings_product FOREIGN KEY (product_id) "
                         + "REFERENCES products(product_id) ON DELETE CASCADE"
                         + ")");
+
+        ensureColumn(conn, "product_toppings", "price_modifier",
+                "ALTER TABLE product_toppings ADD COLUMN price_modifier DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "product_toppings", "is_available",
+                "ALTER TABLE product_toppings ADD COLUMN is_available BOOLEAN NOT NULL DEFAULT TRUE");
     }
 
     private static void ensureCartItemsTable(Connection conn) throws SQLException {
@@ -162,6 +222,21 @@ public final class SchemaInitializer {
                         + "CONSTRAINT fk_cart_items_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE, "
                         + "CONSTRAINT fk_cart_items_size FOREIGN KEY (product_size_id) REFERENCES product_sizes(size_id) ON DELETE SET NULL"
                         + ")");
+
+        ensureColumn(conn, "cart_items", "product_size_id",
+                "ALTER TABLE cart_items ADD COLUMN product_size_id INT NULL");
+        ensureColumn(conn, "cart_items", "selected_topping_ids_json",
+                "ALTER TABLE cart_items ADD COLUMN selected_topping_ids_json TEXT");
+        ensureColumn(conn, "cart_items", "selected_toppings_json",
+                "ALTER TABLE cart_items ADD COLUMN selected_toppings_json LONGTEXT");
+        ensureColumn(conn, "cart_items", "unit_price",
+                "ALTER TABLE cart_items ADD COLUMN unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "cart_items", "item_total",
+                "ALTER TABLE cart_items ADD COLUMN item_total DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "cart_items", "created_at",
+                "ALTER TABLE cart_items ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        ensureColumn(conn, "cart_items", "updated_at",
+                "ALTER TABLE cart_items ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
     }
 
     private static void ensureOrdersTable(Connection conn) throws SQLException {
@@ -208,6 +283,21 @@ public final class SchemaInitializer {
                         + "CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE SET NULL, "
                         + "CONSTRAINT fk_order_items_size FOREIGN KEY (product_size_id) REFERENCES product_sizes(size_id) ON DELETE SET NULL"
                         + ")");
+
+        ensureColumn(conn, "order_items", "product_name",
+                "ALTER TABLE order_items ADD COLUMN product_name VARCHAR(100) NOT NULL DEFAULT ''");
+        ensureColumn(conn, "order_items", "product_size_id",
+                "ALTER TABLE order_items ADD COLUMN product_size_id INT NULL");
+        ensureColumn(conn, "order_items", "size_name",
+                "ALTER TABLE order_items ADD COLUMN size_name VARCHAR(50)");
+        ensureColumn(conn, "order_items", "selected_topping_ids_json",
+                "ALTER TABLE order_items ADD COLUMN selected_topping_ids_json TEXT");
+        ensureColumn(conn, "order_items", "selected_toppings_json",
+                "ALTER TABLE order_items ADD COLUMN selected_toppings_json LONGTEXT");
+        ensureColumn(conn, "order_items", "unit_price",
+                "ALTER TABLE order_items ADD COLUMN unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "order_items", "item_total",
+                "ALTER TABLE order_items ADD COLUMN item_total DECIMAL(10,2) NOT NULL DEFAULT 0.00");
     }
 
     private static void ensurePaymentsTable(Connection conn) throws SQLException {
@@ -222,6 +312,37 @@ public final class SchemaInitializer {
                         + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                         + "CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE"
                         + ")");
+
+        ensureColumn(conn, "payments", "transaction_id",
+                "ALTER TABLE payments ADD COLUMN transaction_id VARCHAR(120) NOT NULL DEFAULT ''");
+        ensureColumn(conn, "payments", "status",
+                "ALTER TABLE payments ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending'");
+        ensureColumn(conn, "payments", "amount",
+                "ALTER TABLE payments ADD COLUMN amount DECIMAL(10,2) NOT NULL DEFAULT 0.00");
+        ensureColumn(conn, "payments", "method",
+                "ALTER TABLE payments ADD COLUMN method VARCHAR(50) NOT NULL DEFAULT 'cash'");
+        ensureColumn(conn, "payments", "created_at",
+                "ALTER TABLE payments ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+    }
+
+    private static void ensureReviewsTable(Connection conn) throws SQLException {
+        execute(conn,
+                "CREATE TABLE IF NOT EXISTS reviews ("
+                        + "review_id INT AUTO_INCREMENT PRIMARY KEY, "
+                        + "user_id INT NOT NULL, "
+                        + "product_id INT NOT NULL, "
+                        + "rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5), "
+                        + "comment TEXT, "
+                        + "image_url VARCHAR(500), "
+                        + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                        + "CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE, "
+                        + "CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE"
+                        + ")");
+
+        ensureColumn(conn, "reviews", "image_url",
+                "ALTER TABLE reviews ADD COLUMN image_url VARCHAR(500)");
+        ensureColumn(conn, "reviews", "created_at",
+                "ALTER TABLE reviews ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
     }
 
     private static void migrateLegacyProducts(Connection conn) throws SQLException {
@@ -406,6 +527,47 @@ public final class SchemaInitializer {
         if (!columnExists(conn, table, column)) {
             execute(conn, alterSql);
         }
+    }
+
+    private static void ensureDatabase(String url, String username, String password) throws SQLException {
+        String databaseName = extractDatabaseName(url);
+        if (databaseName == null) {
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(toServerUrl(url), username, password);
+             Statement statement = conn.createStatement()) {
+            statement.execute("CREATE DATABASE IF NOT EXISTS " + quoteIdentifier(databaseName)
+                    + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        }
+    }
+
+    private static String extractDatabaseName(String url) {
+        String base = urlWithoutQuery(url);
+        int slash = base.indexOf('/', "jdbc:mysql://".length());
+        if (slash < 0 || slash == base.length() - 1) {
+            return null;
+        }
+
+        String databaseName = base.substring(slash + 1);
+        return databaseName.isEmpty() || databaseName.contains("/") ? null : databaseName;
+    }
+
+    private static String toServerUrl(String url) {
+        int queryIndex = url.indexOf('?');
+        String base = queryIndex >= 0 ? url.substring(0, queryIndex) : url;
+        String query = queryIndex >= 0 ? url.substring(queryIndex) : "";
+        int slash = base.indexOf('/', "jdbc:mysql://".length());
+        return slash >= 0 ? base.substring(0, slash + 1) + query : url;
+    }
+
+    private static String urlWithoutQuery(String url) {
+        int queryIndex = url.indexOf('?');
+        return queryIndex >= 0 ? url.substring(0, queryIndex) : url;
+    }
+
+    private static String quoteIdentifier(String identifier) {
+        return "`" + identifier.replace("`", "``") + "`";
     }
 
     private static boolean tableExists(Connection conn, String tableName) throws SQLException {

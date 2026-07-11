@@ -54,8 +54,8 @@
     <section class="section container">
         <article class="featured-post">
             <div class="featured-image-wrap">
-                <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=1200&q=80"
-                     alt="Cozy tea shop interior" loading="lazy">
+                <img src="${pageContext.request.contextPath}/assets/Rich Dark Brown Coffee Scene_ Whole Beans, Dust, and Warm Aromas.jpg"
+                     alt="Coffee beans and ground coffee" loading="lazy">
             </div>
             <div class="featured-body">
                 <div class="post-meta">
@@ -101,15 +101,16 @@
                 <h3 style="margin-top:0;color:var(--primary);">Visit Our Cafe</h3>
                 <p style="color:var(--muted);">Drop in for daily favourites or try one of our seasonal specials. We offer pickup, dine-in, and light snacks.</p>
                 <ul style="color:var(--muted);padding-left:18px;">
-                    <li><strong>Address:</strong> Thamel, Kathmandu</li>
+                    <li><strong>Address:</strong> Informatics College Pokhara</li>
                     <li><strong>Hours:</strong> Mon–Sun 09:00 — 21:00</li>
-                    <li><strong>Phone:</strong> +977 1 555 0123</li>
+                    <li><strong>Phone:</strong> 90000000</li>
+                    <li><strong>Email:</strong> mithocha@gmail.com</li>
                 </ul>
                 <p style="margin-top:12px;color:var(--muted);">Find us on Google Maps or send us a message — we're happy to answer questions about menu items and accessibility.</p>
             </div>
             <div style="flex:1;min-width:320px;">
-                <div style="border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-soft);">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Cafe seating" style="width:100%;height:100%;object-fit:cover;display:block;">
+                <div class="visit-image-wrap">
+                    <img src="${pageContext.request.contextPath}/assets/images/download (6).jpg" alt="Cafe interior and seating">
                 </div>
             </div>
         </section>

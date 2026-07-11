@@ -56,13 +56,6 @@
       </a>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="nav-item logout-trigger" 
-              data-logout-url="${pageContext.request.contextPath}/logout"
-              style="background:none;border:none;cursor:pointer;width:100%;text-align:left;color:inherit;font-family:inherit;font-size:inherit;">
-          <span class="material-symbols-outlined">logout</span>Logout
-      </button>
-    </div>
   </aside>
 
   <!-- ── Main ── -->

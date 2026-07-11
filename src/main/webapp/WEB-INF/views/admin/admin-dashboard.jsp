@@ -42,6 +42,10 @@
         <span class="material-symbols-outlined">people</span>
         Customers
       </a>
+      <a href="${pageContext.request.contextPath}/admin/reviews" class="nav-item">
+        <span class="material-symbols-outlined">rate_review</span>
+        Reviews
+      </a>
       <a href="${pageContext.request.contextPath}/admin/inventory" class="nav-item">
         <span class="material-symbols-outlined">inventory_2</span>
         Inventory
@@ -56,13 +60,6 @@
       </a>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="nav-item logout-trigger" 
-              data-logout-url="${pageContext.request.contextPath}/logout"
-              style="background:none;border:none;cursor:pointer;width:100%;text-align:left;color:inherit;font-family:inherit;font-size:inherit;">
-          <span class="material-symbols-outlined">logout</span>Logout
-      </button>
-    </div>
   </aside>
 
   <!-- ── Main ── -->
@@ -129,6 +126,57 @@
           </div>
           <p class="stat-value">${not empty totalProducts ? totalProducts : 0}</p>
           <p class="stat-label">Total Products</p>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon reviews">
+            <span class="material-symbols-outlined">rate_review</span>
+          </div>
+          <p class="stat-value">${not empty totalReviews ? totalReviews : 0}</p>
+          <p class="stat-label">Total Reviews</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="card-header">
+          <h2 class="card-title">Recent Reviews</h2>
+          <a href="${pageContext.request.contextPath}/admin/reviews" class="btn-secondary btn-sm">View All Reviews</a>
+        </div>
+        <div class="table-wrapper">
+          <c:choose>
+            <c:when test="${not empty recentReviews}">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Review ID</th>
+                    <th>User ID</th>
+                    <th>Product ID</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <c:forEach var="review" items="${recentReviews}">
+                    <tr>
+                      <td><strong>#${review.reviewId}</strong></td>
+                      <td>${review.userId}</td>
+                      <td>${review.productId}</td>
+                      <td>${review.rating}</td>
+                      <td><c:out value="${review.comment}" default="-"/></td>
+                      <td>${review.createdAt}</td>
+                    </tr>
+                  </c:forEach>
+                </tbody>
+              </table>
+            </c:when>
+            <c:otherwise>
+              <div class="empty-state">
+                <span class="material-symbols-outlined">rate_review</span>
+                <p>No reviews available yet.</p>
+              </div>
+            </c:otherwise>
+          </c:choose>
         </div>
       </div>
 
